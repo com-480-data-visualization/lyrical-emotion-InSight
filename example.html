@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Lyrics Have Changed Through the Decades</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .header {
+            background-color: #f8d7e3;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+        }
+        .chart-area {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 0 0 10px 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #333;
+        }
+        .replay-btn {
+            padding: 5px 15px;
+            border: 1px solid #333;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .axis text {
+            fill: #666;
+            font-size: 12px;
+        }
+        .line {
+            fill: none;
+            stroke-width: 3;
+        }
+        .dot {
+            stroke-width: 2;
+        }
+        .line-label {
+            font-size: 12px;
+        }
+        .decade-label {
+            font-size: 14px;
+            fill: #666;
+            text-anchor: middle;
+        }
+        .music-notes {
+            position: absolute;
+            right: 40px;
+            top: 30px;
+        }
+        .footer {
+            font-size: 12px;
+            text-align: right;
+            margin-top: 5px;
+            color: #888;
+        }
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>How lyrics have changed through the decades</h1>
+            <button class="replay-btn" id="replay">Replay</button>
+            <svg class="music-notes" width="120" height="60">
+                <!-- Music notes will be added with D3 -->
+            </svg>
+        </div>
+        <div class="chart-area">
+            <svg id="chart" width="100%" height="400"></svg>
+            <div id="loading" class="loading">Loading data...</div>
+        </div>
+        <div class="footer">
+            ✶ A Flourish chart
+        </div>
+    </div>
+
+    <script>
+        // Main visualization function that takes dataset as parameter
+        function createVisualization(dataset) {
+            // Hide loading indicator
+            document.getElementById("loading").style.display = "none";
+            
+            // Clear previous chart if any
+            d3.select("#chart").html("");
+            
+            // Setup dimensions
+            const margin = {top: 30, right: 170, bottom: 50, left: 50};
+            const svgWidth = document.getElementById('chart').clientWidth;
+            const svgHeight = 400;
+            const width = svgWidth - margin.left - margin.right;
+            const height = svgHeight - margin.top - margin.bottom;
+            
+            // Create SVG
+            const svg = d3.select("#chart")
+                .attr("width", svgWidth)
+                .attr("height", svgHeight);
+                
+            const chartGroup = svg.append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+            
+            // X scale - decades
+            // Extract decade labels from data and format them
+            const decadeMap = {
+                '1950s': '50s',
+                '1960s': '60s',
+                '1970s': '70s',
+                '1980s': '80s',
+                '1990s': '90s',
+                '2000s': '00s',
+                '2010s': '10s'
+            };
+            
+            // Update data to use shortened decade format
+            Object.keys(dataset).forEach(key => {
+                dataset[key].forEach(d => {
+                    d.displayDecade = decadeMap[d.decade] || d.decade;
+                });
+            });
+            
+            const decades = dataset.loveWords.map(d => d.displayDecade);
+            
+            const xScale = d3.scaleBand()
+                .domain(decades)
+                .range([0, width])
+                .padding(0.1);
+            
+            // Create a continuous x scale for animation
+            const xScaleContinuous = d3.scaleLinear()
+                .domain([0, decades.length - 1])
+                .range([xScale(decades[0]) + xScale.bandwidth()/2, xScale(decades[decades.length-1]) + xScale.bandwidth()/2]);
+            
+            // Find max value across all datasets to set y scale
+            let maxValue = 0;
+            Object.keys(dataset).forEach(key => {
+                const categoryMax = d3.max(dataset[key], d => d.value);
+                maxValue = Math.max(maxValue, categoryMax);
+            });
+            
+            // Add 10% buffer to the max value
+            maxValue = Math.ceil(maxValue * 1.1);
+            
+            // Y scale
+            const yScale = d3.scaleLinear()
+                .domain([0, maxValue])
+                .range([height, 0]);
+            
+            // X axis
+            chartGroup.append("g")
+                .attr("class", "x-axis")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(xScale).tickSize(0));
+                
+            // Add Decade label
+            chartGroup.append("text")
+                .attr("x", width / 2)
+                .attr("y", -10)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#333")
+                .style("font-size", "16px")
+                .text("Decade");
+            
+            // Define categories with colors
+            const categories = [
+                {name: "love words", data: dataset.loveWords, color: "#FF69B4"},
+                {name: "positive sentiment", data: dataset.positiveSentiment, color: "#483D8B"},
+                {name: "negative sentiment", data: dataset.negativeSentiment, color: "#2E8B57"},
+                {name: "swear words", data: dataset.swearWords, color: "#FFA07A"},
+                {name: "money words", data: dataset.moneyWords, color: "#9932CC"},
+                {name: "sex words", data: dataset.sexWords, color: "#4169E1"},
+                {name: "neutral percentage", data: dataset.neutralPercentage, color: "#FF4500"}
+            ];
+            
+            // Setup line generator with linear interpolation (no smoothing)
+            const line = d3.line()
+                .x(d => xScale(d.displayDecade) + xScale.bandwidth() / 2)
+                .y(d => yScale(d.value))
+                .curve(d3.curveLinear); // Use linear curve for straight lines
+            
+            // Create a line path for each category (initially empty)
+            const linePaths = {};
+            categories.forEach(category => {
+                linePaths[category.name] = chartGroup.append("path")
+                    .attr("class", "line")
+                    .attr("stroke", category.color)
+                    .attr("d", "")
+                    .attr("stroke-width", 3);
+            });
+            
+            // Function to interpolate values based on progress
+            function interpolateValues(data, progress) {
+                const maxIdx = data.length - 1;
+                const idx = Math.min(maxIdx, Math.max(0, progress * maxIdx));
+                const idxLow = Math.floor(idx);
+                const idxHigh = Math.ceil(idx);
+                
+                if (idxLow === idxHigh) return data[idxLow].value;
+                
+                const t = idx - idxLow;
+                return data[idxLow].value * (1 - t) + data[idxHigh].value * t;
+            }
+            
+            // Create dots for each category that will move along the lines
+            const dots = chartGroup.selectAll(".dot-group")
+                .data(categories)
+                .enter()
+                .append("g")
+                .attr("class", "dot-group");
+                
+            dots.append("circle")
+                .attr("class", "dot")
+                .attr("r", 8)
+                .attr("fill", d => d.color)
+                .attr("stroke", "white")
+                .attr("stroke-width", 2)
+                .attr("cx", xScaleContinuous(0)) // Start at first decade
+                .attr("cy", d => yScale(d.data[0].value));
+                
+            // Add labels
+            const labels = chartGroup.selectAll(".label-group")
+                .data(categories)
+                .enter()
+                .append("g")
+                .attr("class", "label-group");
+                
+            labels.append("text")
+                .attr("class", "line-label")
+                .attr("x", xScaleContinuous(0) + 15)
+                .attr("dy", ".35em")
+                .attr("fill", d => d.color)
+                .text(d => `- ${d.name} - ${Math.round(d.data[0].value)}%`);
+            
+            // Animation function
+            function animateChart() {
+                const duration = 5000; // 5 seconds for full animation
+                const startTime = Date.now();
+                
+                function update() {
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(1, elapsed / duration);
+                    
+                    // Calculate current decade index for line drawing
+                    const maxIdx = decades.length - 1;
+                    const decadeIdx = Math.min(maxIdx, progress * maxIdx);
+                    const currentDecade = Math.floor(decadeIdx);
+                    
+                    // Update each category
+                    categories.forEach(category => {
+                        // Get visible data up to current progress
+                        const pointsToDraw = [];
+                        for (let i = 0; i <= currentDecade; i++) {
+                            pointsToDraw.push(category.data[i]);
+                        }
+                        
+                        // If we're between decades, add interpolated point
+                        if (currentDecade < maxIdx && decadeIdx > currentDecade) {
+                            const fraction = decadeIdx - currentDecade;
+                            const startValue = category.data[currentDecade].value;
+                            const endValue = category.data[currentDecade + 1].value;
+                            const interpolatedValue = startValue * (1 - fraction) + endValue * fraction;
+                            
+                            const interpolatedX = xScaleContinuous(decadeIdx);
+                            
+                            // Add final interpolated point
+                            pointsToDraw.push({
+                                displayDecade: null, // Not used in line drawing
+                                x: interpolatedX,
+                                value: interpolatedValue
+                            });
+                        }
+                        
+                        // Draw the line up to the current position
+                        const customLine = d3.line()
+                            .x((d, i) => {
+                                if (i === pointsToDraw.length - 1 && d.x !== undefined) {
+                                    return d.x;
+                                }
+                                return xScale(d.displayDecade) + xScale.bandwidth() / 2;
+                            })
+                            .y(d => yScale(d.value))
+                            .curve(d3.curveLinear);
+                            
+                        linePaths[category.name]
+                            .datum(pointsToDraw)
+                            .attr("d", customLine);
+                    });
+                    
+                    // Update dots positions
+                    dots.select("circle")
+                        .attr("cx", xScaleContinuous(decadeIdx))
+                        .attr("cy", d => {
+                            const value = interpolateValues(d.data, progress);
+                            return yScale(value);
+                        });
+                    
+                    // Update labels
+                    labels.select("text")
+                        .attr("x", xScaleContinuous(decadeIdx) + 15)
+                        .attr("y", d => {
+                            const value = interpolateValues(d.data, progress);
+                            return yScale(value);
+                        })
+                        .text(d => {
+                            const value = interpolateValues(d.data, progress);
+                            return `- ${d.name} - ${Math.round(value)}%`;
+                        });
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    }
+                }
+                
+                update();
+            }
+            
+            // Add music notes to the header
+            const musicNotesGroup = d3.select(".music-notes");
+            musicNotesGroup.html("");
+            
+            const notes = [
+                {x: 20, y: 30, type: "treble"},
+                {x: 45, y: 15, type: "quarter"},
+                {x: 60, y: 25, type: "eighth"},
+                {x: 75, y: 10, type: "quarter"},
+                {x: 90, y: 20, type: "eighth"}
+            ];
+            
+            // Add music notes
+            notes.forEach(note => {
+                if (note.type === "treble") {
+                    musicNotesGroup.append("text")
+                        .attr("x", note.x)
+                        .attr("y", note.y)
+                        .attr("font-size", "28px")
+                        .text("𝄞")
+                        .attr("fill", "#333");
+                } else if (note.type === "quarter") {
+                    musicNotesGroup.append("text")
+                        .attr("x", note.x)
+                        .attr("y", note.y)
+                        .attr("font-size", "20px")
+                        .text("♩")
+                        .attr("fill", "#333");
+                } else if (note.type === "eighth") {
+                    musicNotesGroup.append("text")
+                        .attr("x", note.x)
+                        .attr("y", note.y)
+                        .attr("font-size", "20px")
+                        .text("♪")
+                        .attr("fill", "#333");
+                }
+            });
+            
+            // Add curved line for music staff
+            const staffLine = d3.line()
+                .x(d => d.x)
+                .y(d => d.y)
+                .curve(d3.curveBasis);
+                
+            const staffPoints = [
+                {x: 10, y: 40},
+                {x: 30, y: 35},
+                {x: 50, y: 38},
+                {x: 70, y: 30},
+                {x: 90, y: 35},
+                {x: 110, y: 32}
+            ];
+            
+            musicNotesGroup.append("path")
+                .datum(staffPoints)
+                .attr("d", staffLine)
+                .attr("fill", "none")
+                .attr("stroke", "#333")
+                .attr("stroke-width", 1.5);
+                
+            // Start animation
+            setTimeout(animateChart, 300);
+        }
+
+        // Load and process the CSV data
+        function loadData() {
+            // Show loading indicator
+            document.getElementById("loading").style.display = "block";
+            
+            // Load the CSV file
+            d3.csv("lyrics_aggregated_data.csv").then(data => {
+                // Process the data
+                const dataset = {
+                    loveWords: [],
+                    positiveSentiment: [],
+                    negativeSentiment: [],
+                    swearWords: [],
+                    moneyWords: [],
+                    sexWords: [],
+                    neutralPercentage: []
+                };
+                
+                // For each row in the CSV
+                data.forEach(d => {
+                    // Extract data for each category
+                    dataset.loveWords.push({
+                        decade: d.decade,
+                        value: parseFloat(d.love_words)
+                    });
+                    
+                    dataset.positiveSentiment.push({
+                        decade: d.decade,
+                        value: parseFloat(d.positive_sentiment)
+                    });
+                    
+                    dataset.negativeSentiment.push({
+                        decade: d.decade,
+                        value: parseFloat(d.negative_sentiment)
+                    });
+                    
+                    dataset.swearWords.push({
+                        decade: d.decade,
+                        value: parseFloat(d.swear_words)
+                    });
+                    
+                    dataset.moneyWords.push({
+                        decade: d.decade,
+                        value: parseFloat(d.money_words)
+                    });
+                    
+                    dataset.sexWords.push({
+                        decade: d.decade,
+                        value: parseFloat(d.sex_words)
+                    });
+                    
+                    dataset.neutralPercentage.push({
+                        decade: d.decade,
+                        value: parseFloat(d.neutral_percentage)
+                    });
+                });
+                
+                // Sort data by decade to ensure proper order
+                const decadeOrder = {
+                    '1950s': 0, '1960s': 1, '1970s': 2, '1980s': 3, 
+                    '1990s': 4, '2000s': 5, '2010s': 6
+                };
+                
+                const sortByDecade = (a, b) => {
+                    return decadeOrder[a.decade] - decadeOrder[b.decade];
+                };
+                
+                Object.keys(dataset).forEach(key => {
+                    dataset[key].sort(sortByDecade);
+                });
+                
+                // Create visualization with processed data
+                createVisualization(dataset);
+            }).catch(error => {
+                // Handle errors
+                console.error("Error loading data:", error);
+                document.getElementById("loading").textContent = "Error loading data. Please check console for details.";
+            });
+        }
+
+        // Use fallback data if CSV loading fails
+        function useFallbackData() {
+            const dataset = {
+                loveWords: [
+                    {decade: '1950s', value: 85.0},
+                    {decade: '1960s', value: 82.0},
+                    {decade: '1970s', value: 79.0},
+                    {decade: '1980s', value: 76.0},
+                    {decade: '1990s', value: 75.0},
+                    {decade: '2000s', value: 74.5},
+                    {decade: '2010s', value: 74.0}
+                ],
+                positiveSentiment: [
+                    {decade: '1950s', value: 68.0},
+                    {decade: '1960s', value: 65.0},
+                    {decade: '1970s', value: 62.0},
+                    {decade: '1980s', value: 60.0},
+                    {decade: '1990s', value: 58.0},
+                    {decade: '2000s', value: 57.0},
+                    {decade: '2010s', value: 56.0}
+                ],
+                negativeSentiment: [
+                    {decade: '1950s', value: 30.0},
+                    {decade: '1960s', value: 33.0},
+                    {decade: '1970s', value: 31.0},
+                    {decade: '1980s', value: 34.0},
+                    {decade: '1990s', value: 38.0},
+                    {decade: '2000s', value: 40.0},
+                    {decade: '2010s', value: 42.0}
+                ],
+                moneyWords: [
+                    {decade: '1950s', value: 8.0},
+                    {decade: '1960s', value: 11.0},
+                    {decade: '1970s', value: 16.0},
+                    {decade: '1980s', value: 13.0},
+                    {decade: '1990s', value: 16.0},
+                    {decade: '2000s', value: 18.0},
+                    {decade: '2010s', value: 20.0}
+                ],
+                swearWords: [
+                    {decade: '1950s', value: 5.0},
+                    {decade: '1960s', value: 8.0},
+                    {decade: '1970s', value: 12.0},
+                    {decade: '1980s', value: 17.0},
+                    {decade: '1990s', value: 21.0},
+                    {decade: '2000s', value: 24.0},
+                    {decade: '2010s', value: 26.0}
+                ],
+                sexWords: [
+                    {decade: '1950s', value: 1.0},
+                    {decade: '1960s', value: 2.0},
+                    {decade: '1970s', value: 3.0},
+                    {decade: '1980s', value: 5.0},
+                    {decade: '1990s', value: 7.0},
+                    {decade: '2000s', value: 8.0},
+                    {decade: '2010s', value: 9.0}
+                ],
+                neutralPercentage: [
+                    {decade: '1950s', value: 1.0},
+                    {decade: '1960s', value: 1.2},
+                    {decade: '1970s', value: 1.5},
+                    {decade: '1980s', value: 1.7},
+                    {decade: '1990s', value: 1.8},
+                    {decade: '2000s', value: 1.9},
+                    {decade: '2010s', value: 2.0}
+                ]
+            };
+            
+            createVisualization(dataset);
+        }
+
+        // Initialize the visualization with data loading
+        document.addEventListener("DOMContentLoaded", () => {
+            try {
+                loadData();
+            } catch (e) {
+                console.error("Error during data loading:", e);
+                useFallbackData();
+            }
+        });
+        
+        // Add replay button functionality
+        document.getElementById("replay").addEventListener("click", () => {
+            try {
+                loadData();
+            } catch (e) {
+                console.error("Error during data reload:", e);
+                useFallbackData();
+            }
+        });
+        
+        // Handle window resize
+        window.addEventListener("resize", () => {
+            clearTimeout(window.resizeTimer);
+            window.resizeTimer = setTimeout(() => {
+                // Get the current dataset from the latest visualization
+                // or reload the data
+                loadData();
+            }, 250);
+        });
+    </script>
+</body>
+</html>
