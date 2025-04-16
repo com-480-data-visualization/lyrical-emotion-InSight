@@ -1,0 +1,398 @@
+{
+  "english": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1900,
+      2020
+    ],
+    "song_count": 784471
+  },
+  "french": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1955,
+      2017
+    ],
+    "song_count": 35738
+  },
+  "german": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1957,
+      2017
+    ],
+    "song_count": 33813
+  },
+  "lithuanian": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      2005,
+      2017
+    ],
+    "song_count": 427
+  },
+  "tagalog": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1993,
+      2017
+    ],
+    "song_count": 473
+  },
+  "dutch": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1970,
+      2016
+    ],
+    "song_count": 7011
+  },
+  "slovene": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      2000,
+      2017
+    ],
+    "song_count": 456
+  },
+  "somali": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1978,
+      2016
+    ],
+    "song_count": 171
+  },
+  "swahili": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1999,
+      2016
+    ],
+    "song_count": 117
+  },
+  "icelandic": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1989,
+      2015
+    ],
+    "song_count": 217
+  },
+  "welsh": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1991,
+      2015
+    ],
+    "song_count": 142
+  },
+  "portuguese": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1955,
+      2017
+    ],
+    "song_count": 24554
+  },
+  "croatian": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1995,
+      2017
+    ],
+    "song_count": 1826
+  },
+  "slovak": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1988,
+      2016
+    ],
+    "song_count": 2448
+  },
+  "czech": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1993,
+      2015
+    ],
+    "song_count": 183
+  },
+  "turkish": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1977,
+      2017
+    ],
+    "song_count": 3202
+  },
+  "italian": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1956,
+      2017
+    ],
+    "song_count": 31035
+  },
+  "cebuano": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1987,
+      2016
+    ],
+    "song_count": 578
+  },
+  "polish": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1971,
+      2016
+    ],
+    "song_count": 6132
+  },
+  "hungarian": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1998,
+      2016
+    ],
+    "song_count": 1100
+  },
+  "norwegian": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1980,
+      2017
+    ],
+    "song_count": 2769
+  },
+  "romanian": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1986,
+      2016
+    ],
+    "song_count": 403
+  },
+  "estonian": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      2000,
+      2016
+    ],
+    "song_count": 165
+  },
+  "albanian": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      2005,
+      2016
+    ],
+    "song_count": 74
+  },
+  "indonesian": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1978,
+      2016
+    ],
+    "song_count": 979
+  },
+  "swedish": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1966,
+      2017
+    ],
+    "song_count": 6189
+  },
+  "hawaiian": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1989,
+      2016
+    ],
+    "song_count": 228
+  },
+  "hausa": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1978,
+      2017
+    ],
+    "song_count": 1119
+  },
+  "danish": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1966,
+      2017
+    ],
+    "song_count": 1626
+  },
+  "latvian": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1995,
+      2016
+    ],
+    "song_count": 260
+  },
+  "finnish": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1981,
+      2017
+    ],
+    "song_count": 5269
+  },
+  "spanish": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1960,
+      2017
+    ],
+    "song_count": 72335
+  },
+  "latin": {
+    "emotions": [
+      "valence_mean",
+      "arousal_mean",
+      "dominance_mean"
+    ],
+    "years_range": [
+      1987,
+      2017
+    ],
+    "song_count": 620
+  }
+}
