@@ -1,0 +1,2702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cross‑Cultural Dynamics of Emotional Expression in Lyrics</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-sankey/0.12.3/d3-sankey.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+/* ---- Main nav + Hero styles ---- */
+    .main-nav {
+        position: fixed; top: 0; width: 100%; z-index: 200;
+        background: rgba(25,25,25,0.7);
+        backdrop-filter: blur(8px);
+    }
+    .nav-container {
+        max-width: 1200px; margin: 0 auto;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 10px 20px;
+    }
+    .main-nav .logo {
+        color: #fff; font-size: 1.4rem; font-weight: 600;
+    }
+    .main-nav nav a {
+        color: rgba(255,255,255,0.8);
+        margin-left: 20px; text-decoration: none; font-weight: 500;
+        transition: color 0.3s;
+    }
+    .main-nav nav a:hover,
+    .main-nav nav a.active {
+        color: #ffd54f;
+    }
+    
+    .hero {
+        height: 100vh; display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff; text-align: center; padding: 0 20px;
+    }
+    .hero-content h1 {
+        font-size: 3rem; margin-bottom: 0.5rem; text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    .hero-content p {
+        font-size: 1.25rem; margin-bottom: 1.5rem; opacity: 0.9;
+    }
+    .hero-content button {
+        background: #fff; color: #764ba2; border: none;
+        padding: 0.8rem 2rem; font-size: 1rem; border-radius: 30px;
+        cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .hero-content button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    }
+  /* To prevent hero from hiding under fixed nav */
+  body { scroll-padding-top: 60px; }
+        /* Common Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .section {
+            max-width: 1200px;
+            margin: 40px auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .section-intro {
+            padding: 20px 30px;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .visualization-container {
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #444;
+        }
+        
+        h3 {
+            font-size: 22px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        
+        p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .page-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .page-title h1 {
+            color: white;
+            margin: 0;
+        }
+        
+        .page-title p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 18px;
+            max-width: 800px;
+            margin: 15px auto 0;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 60px;
+            background-color: #f9f9f9;
+            color: #777;
+        }
+        
+        /* Tooltip shared style */
+        .tooltip {
+            position: absolute;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            pointer-events: none;
+            font-size: 14px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            opacity: 0;
+        }
+        
+        /* Individual module styles preserved below */
+        
+        /* A: Lyrics Change Chart */
+        .module-a .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .module-a .header {
+            background-color: #f8d7e3;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+        }
+        .module-a .chart-area {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 0 0 10px 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        .module-a h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #333;
+        }
+        .module-a .replay-btn {
+            padding: 5px 15px;
+            border: 1px solid #333;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .module-a .axis text {
+            fill: #666;
+            font-size: 12px;
+        }
+        .module-a .line {
+            fill: none;
+            stroke-width: 3;
+        }
+        .module-a .dot {
+            stroke-width: 2;
+        }
+        .module-a .line-label {
+            font-size: 12px;
+        }
+        .module-a .decade-label {
+            font-size: 14px;
+            fill: #666;
+            text-anchor: middle;
+        }
+        .module-a .music-notes {
+            position: absolute;
+            right: 40px;
+            top: 30px;
+        }
+        .module-a .footer {
+            font-size: 12px;
+            text-align: right;
+            margin-top: 5px;
+            color: #888;
+        }
+        .module-a .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: #666;
+        }
+        
+        /* C: Emotion Trends Across Languages */
+        .module-c .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .module-c .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px 10px 0 0;
+        }
+        .module-c .chart-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: #f5f7fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .module-c .control-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .module-c .chart-area {
+            padding: 20px 30px 30px;
+            position: relative;
+        }
+        .module-c h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 500;
+        }
+        .module-c h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        .module-c select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: white;
+            font-size: 14px;
+            min-width: 150px;
+            cursor: pointer;
+        }
+        .module-c .tooltip {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+        }
+        .module-c .axis-label {
+            font-size: 14px;
+            fill: #555;
+        }
+        .module-c .loading {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 16px;
+            color: #666;
+        }
+        .module-c .footer {
+            padding: 15px 30px;
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+            background-color: #f5f7fa;
+            border-top: 1px solid #e9ecef;
+        }
+        .module-c .gradient-bar {
+            transition: fill 0.5s ease;
+        }
+        .module-c .y-line {
+            stroke: #ddd;
+            stroke-dasharray: 3,3;
+        }
+        
+        /* E: Valence & Arousal Relationship */
+        .module-e .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 25px;
+        }
+        .module-e h1 {
+            color: #444;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .module-e h2 {
+            color: #555;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        .module-e .chart-container {
+            margin-bottom: 40px;
+        }
+        .module-e .tooltip h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: #444;
+        }
+        .module-e .tooltip p {
+            margin: 0;
+            line-height: 1.4;
+        }
+        .module-e .selector-container {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .module-e label {
+            margin-right: 10px;
+            font-weight: 500;
+        }
+        .module-e select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 140px;
+        }
+        .module-e .dot {
+            cursor: pointer;
+            transition: r 0.2s, opacity 0.2s;
+        }
+        .module-e .dot:hover {
+            stroke: #555;
+            stroke-width: 1.5;
+        }
+        .module-e .bar {
+            transition: opacity 0.3s;
+        }
+        .module-e .bar:hover {
+            opacity: 0.8;
+        }
+        .module-e .axis text {
+            font-size: 11px;
+            fill: #666;
+        }
+        .module-e .axis-label {
+            font-weight: 500;
+            font-size: 12px;
+            fill: #555;
+        }
+        .module-e .grid line {
+            stroke: #e0e0e0;
+            stroke-opacity: 0.7;
+            shape-rendering: crispEdges;
+        }
+        .module-e .legend-item {
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .module-e .bar-label {
+            font-size: 9px;
+            fill: #333;
+            font-weight: 500;
+        }
+        .module-e .footer {
+            font-size: 12px;
+            text-align: right;
+            margin-top: 20px;
+            color: #888;
+        }
+        
+        /* B: Lyrical Emotion Trends by Language */
+        .module-b {
+            --primary-color: #e9b0c5;
+            --secondary-color: #f8d7e3;
+            --accent-color: #e74c3c;
+            --text-color: #333;
+            --light-gray: #f5f5f5;
+            --medium-gray: #ddd;
+            --dark-gray: #777;
+            --chart-bg: #f9f9f9;
+            --tooltip-bg: rgba(255, 255, 255, 0.9);
+        }
+        .module-b .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .module-b header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem 2rem;
+            position: relative;
+        }
+        .module-b h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 500;
+        }
+        .module-b .subtitle {
+            margin-top: 0.5rem;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        .module-b .controls {
+            background-color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            gap: 1.5rem;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        .module-b .control-group {
+            flex: 1;
+        }
+        .module-b label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark-gray);
+        }
+        .module-b select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+            font-size: 1rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='%23777' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1.5rem;
+        }
+        .module-b select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+        }
+        .module-b .chart-container {
+            padding: 1.5rem 2rem;
+        }
+        .module-b #chart {
+            width: 100%;
+            height: 500px;
+            background-color: var(--chart-bg);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .module-b .axis path,
+        .module-b .axis line {
+            stroke: var(--medium-gray);
+        }
+        .module-b .axis text {
+            fill: var(--dark-gray);
+            font-size: 12px;
+        }
+        .module-b .axis-title {
+            fill: var(--dark-gray);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .module-b .dot {
+            stroke: white;
+            stroke-width: 1;
+        }
+        .module-b .regression-line {
+            fill: none;
+            stroke: var(--accent-color);
+            stroke-width: 2;
+            stroke-dasharray: 4, 2;
+        }
+        .module-b .tooltip {
+            position: absolute;
+            padding: 0.75rem;
+            background-color: var(--tooltip-bg);
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            font-size: 0.9rem;
+            z-index: 10;
+            max-width: 200px;
+        }
+        .module-b .tooltip-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            border-bottom: 1px solid var(--medium-gray);
+            padding-bottom: 0.25rem;
+        }
+        .module-b .tooltip-value {
+            margin: 0.25rem 0;
+        }
+        .module-b .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 500px;
+            font-size: 1.25rem;
+            color: var(--dark-gray);
+        }
+        .module-b .loading span {
+            margin-right: 1rem;
+        }
+        .module-b .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--medium-gray);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .module-b .no-data {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 500px;
+            color: var(--dark-gray);
+            text-align: center;
+            padding: 0 2rem;
+        }
+        .module-b .no-data-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .module-b .footer {
+            padding: 1rem 2rem;
+            border-top: 1px solid var(--medium-gray);
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .module-b .controls {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .module-b .chart-container {
+                padding: 1rem;
+            }
+            .module-b #chart {
+                height: 400px;
+            }
+        }
+        
+        /* D: KMeans Cluster to Episode - Sankey Diagram */
+        .module-d .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .module-d .header {
+            background-color: #f8d7e3;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+        }
+        .module-d .title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            text-align: center;
+        }
+        .module-d .chart-area {
+            padding: 20px;
+        }
+        .module-d svg {
+            display: block;
+            margin: 0 auto;
+        }
+        .module-d .node rect {
+            fill-opacity: 0.9;
+            stroke: #fff;
+            stroke-width: 1px;
+            transition: all 0.3s;
+        }
+        .module-d .node rect:hover {
+            stroke: #333;
+            stroke-width: 2px;
+            cursor: pointer;
+        }
+        .module-d .node text {
+            font-size: 13px;
+            font-weight: 500;
+            pointer-events: none;
+            fill: #333;
+        }
+        .module-d .link {
+            fill: none;
+            stroke-opacity: 0.4;
+            transition: all 0.3s;
+        }
+        .module-d .link:hover {
+            stroke-opacity: 0.8;
+        }
+        .module-d .highlight {
+            stroke-opacity: 0.8;
+        }
+        .module-d .tooltip {
+            position: absolute;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 5px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            font-size: 14px;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .module-d .tooltip-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .module-d .tooltip-value {
+            color: #666;
+        }
+        .module-d .footer {
+            font-size: 12px;
+            text-align: right;
+            padding: 10px 20px;
+            color: #888;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+<!-- Add this just inside <body>, before your existing .page-title and modules -->
+    <header class="main-nav">
+        <div class="nav-container">
+          <div class="logo">🎵 LyricEmotion</div>
+          <nav>
+            <a href="#hero" class="active">Home</a>
+            <a href="#module-a">Evolution</a>
+            <a href="#module-c">Cross‑Language</a>
+            <a href="#module-e">Valence/Arousal</a>
+            <a href="#module-b">By Language</a>
+            <a href="#module-d">Clustering</a>
+          </nav>
+        </div>
+      </header>
+      
+      <section id="hero" class="hero">
+        <div class="hero-content">
+          <h1>Cross‑Cultural Dynamics of Emotional Expression in Lyrics</h1>
+          <p>Explore how music bridges emotions across languages and time.</p>
+          <button onclick="document.querySelector('#module-a').scrollIntoView({ behavior: 'smooth' })">
+            Dive In ↓
+          </button>
+        </div>
+      </section>    
+    <div class="page-title">
+        <h1>Cross‑Cultural Dynamics of Emotional Expression in Lyrics</h1>
+        <p>an interactive exploration of how lyrics express emotions across languages and time.</p>
+    </div>
+
+    <!-- MODULE A: How lyrics have changed through the decades -->
+    <div class="section">
+        <div class="section-intro">
+            <h2>Historical Evolution of Lyrical Content</h2>
+            <p>This visualization shows how key elements in song lyrics have evolved over the decades, highlighting changing patterns in sentiment, vocabulary, and thematic focus. The multi-line chart tracks several important metrics over time, revealing interesting cultural and linguistic shifts in popular music.</p>
+        </div>
+        
+        <div class="visualization-container module-a">
+            <div class="container">
+                <div class="header">
+                    <h1>How lyrics have changed through the decades</h1>
+                    <button class="replay-btn" id="replay">Replay</button>
+                    <svg class="music-notes" width="120" height="60">
+                        <!-- Music notes will be added with D3 -->
+                    </svg>
+                </div>
+                <div class="chart-area">
+                    <svg id="chart-a" width="100%" height="400"></svg>
+                    <div id="loading-a" class="loading">Loading data...</div>
+                </div>
+                <div class="footer">
+                    ✶ A Flourish chart
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE C: Valence Trends Across Languages -->
+    <div class="section">
+        <div class="section-intro">
+            <h2>Emotional Trends Across Language Barriers</h2>
+            <p>How do different languages express emotional content in their lyrics? This analysis compares valence (positivity), arousal (energy), and dominance across multiple language groups, showcasing distinct cultural patterns in musical expression. The visualization allows for exploration of both time-based trends and average emotional values.</p>
+        </div>
+        
+        <div class="visualization-container module-c">
+            <div class="container">
+                <div class="header">
+                    <h1>Emotion Trends Across Languages</h1>
+                    <h2>Exploring how different languages express emotions over time</h2>
+                </div>
+                <div class="chart-controls">
+                    <div class="control-group">
+                        <label for="dataType">Data Type:</label>
+                        <select id="dataType">
+                            <option value="trend">Time Trends (Change Over Years)</option>
+                            <option value="mean">Average Values</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="emotionType">Emotion Dimension:</label>
+                        <select id="emotionType">
+                            <option value="valence">Valence (Positivity)</option>
+                            <option value="arousal">Arousal (Energy)</option>
+                            <option value="dominance">Dominance (Control)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-area">
+                    <div id="loading-c" class="loading">Loading visualization...</div>
+                    <svg id="chart-c" width="100%" height="600"></svg>
+                </div>
+                <div class="footer">
+                    Data visualization created with D3.js | Source: Global Lyrics Database
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE E: Valence & Arousal Relationship Across Languages -->
+    <div class="section">
+        <div class="section-intro">
+            <h2>The Emotional Fingerprint of Languages</h2>
+            <p>Different languages have distinctive emotional signatures in their musical expressions. This two-part visualization examines the relationship between valence (positivity) and arousal (energy/intensity) across various languages, revealing fascinating cultural differences in how emotions are communicated through lyrics.</p>
+        </div>
+        
+        <div class="visualization-container module-e">
+            <div class="container">
+                <h1>Emotions Across Languages</h1>
+                
+                <div class="chart-container">
+                    <h2>Valence & Arousal Relationship Across Languages</h2>
+                    <div id="scatter-plot"></div>
+                </div>
+                
+                <div class="selector-container">
+                    <label for="dimension-select">Select dimension for bar chart:</label>
+                    <select id="dimension-select">
+                        <option value="valence_mean">Valence (Positivity)</option>
+                        <option value="arousal_mean">Arousal (Intensity)</option>
+                    </select>
+                </div>
+                
+                <div class="chart-container">
+                    <h2 id="bar-chart-title">Average Valence Across Languages</h2>
+                    <div id="bar-chart"></div>
+                </div>
+                
+                <div class="footer">
+                    ✶ Data visualization powered by D3.js
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE B: Lyrical Emotion Trends by Language -->
+    <div class="section">
+        <div class="section-intro">
+            <h2>Temporal Emotion Evolution Within Languages</h2>
+            <p>This visualization allows for an in-depth look at how emotional expression has evolved over time within specific languages. By selecting a language and an emotional dimension, you can observe detailed trends in how that linguistic community has expressed emotions through music across decades, revealing cultural shifts and adaptations.</p>
+        </div>
+        
+        <div class="visualization-container module-b">
+            <div class="container">
+                <header>
+                    <h1>Lyrical Emotion Trends by Language</h1>
+                    <div class="subtitle">Explore how emotions in lyrics have changed over time across different languages</div>
+                </header>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="language-select">Language</label>
+                        <select id="language-select">
+                            <option value="">Select a language</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="emotion-select">Emotion Metric</label>
+                        <select id="emotion-select" disabled>
+                            <option value="">Select an emotion metric</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div id="chart-area">
+                        <div class="no-data">
+                            <div class="no-data-icon">📊</div>
+                            <h3>Select a language and emotion metric to get started</h3>
+                            <p>You'll see how that emotional attribute in lyrics has changed over time.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer">
+                    Data source: Lyrical emotion trends dataset | Visualization created with D3.js
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE D: KMeans Cluster to Episode - Sankey Diagram -->
+    <div class="section">
+        <div class="section-intro">
+            <h2>Clustering Analysis: From Mathematical Patterns to Emotional Episodes</h2>
+            <p>This Sankey diagram presents a fascinating bridge between computational analysis and emotional categorization. Using K-means clustering on lyrical data, we've identified patterns that map to emotional episodes (EDR, CB, PEP). The diagram displays how mathematical clusters correspond to recognizable emotional states, helping us understand the underlying structure of lyrical expression.</p>
+        </div>
+        
+        <div class="visualization-container module-d">
+            <div class="container">
+                <div class="header">
+                    <h1 class="title">KMeans Cluster to Episode - Sankey Diagram</h1>
+                </div>
+                <div class="chart-area">
+                    <svg id="sankey" width="960" height="530"></svg>
+                </div>
+                <div class="footer">
+                    Data visualization by D3.js
+                </div>
+            </div>
+            
+            <div class="tooltip" id="tooltip-d"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 Lyrical Emotion Analysis Project</p>
+        <p>All visualizations created with D3.js | Data sources: Global Lyrics Database</p>
+    </div>
+
+    <script>
+        // Create a shared tooltip for visualizations
+        const sharedTooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+        
+        // ===========================
+        // MODULE A: How lyrics have changed through the decades
+        // ===========================
+        (function() {
+            // Define the dataset with sample data
+            const dataset = {
+                loveWords: [
+                    {decade: '1950s', value: 85.0},
+                    {decade: '1960s', value: 82.0},
+                    {decade: '1970s', value: 79.0},
+                    {decade: '1980s', value: 76.0},
+                    {decade: '1990s', value: 75.0},
+                    {decade: '2000s', value: 74.5},
+                    {decade: '2010s', value: 74.0}
+                ],
+                positiveSentiment: [
+                    {decade: '1950s', value: 68.0},
+                    {decade: '1960s', value: 65.0},
+                    {decade: '1970s', value: 62.0},
+                    {decade: '1980s', value: 60.0},
+                    {decade: '1990s', value: 58.0},
+                    {decade: '2000s', value: 57.0},
+                    {decade: '2010s', value: 56.0}
+                ],
+                negativeSentiment: [
+                    {decade: '1950s', value: 30.0},
+                    {decade: '1960s', value: 33.0},
+                    {decade: '1970s', value: 31.0},
+                    {decade: '1980s', value: 34.0},
+                    {decade: '1990s', value: 38.0},
+                    {decade: '2000s', value: 40.0},
+                    {decade: '2010s', value: 42.0}
+                ],
+                moneyWords: [
+                    {decade: '1950s', value: 8.0},
+                    {decade: '1960s', value: 11.0},
+                    {decade: '1970s', value: 16.0},
+                    {decade: '1980s', value: 13.0},
+                    {decade: '1990s', value: 16.0},
+                    {decade: '2000s', value: 18.0},
+                    {decade: '2010s', value: 20.0}
+                ],
+                swearWords: [
+                    {decade: '1950s', value: 5.0},
+                    {decade: '1960s', value: 8.0},
+                    {decade: '1970s', value: 12.0},
+                    {decade: '1980s', value: 17.0},
+                    {decade: '1990s', value: 21.0},
+                    {decade: '2000s', value: 24.0},
+                    {decade: '2010s', value: 26.0}
+                ],
+                sexWords: [
+                    {decade: '1950s', value: 1.0},
+                    {decade: '1960s', value: 2.0},
+                    {decade: '1970s', value: 3.0},
+                    {decade: '1980s', value: 5.0},
+                    {decade: '1990s', value: 7.0},
+                    {decade: '2000s', value: 8.0},
+                    {decade: '2010s', value: 9.0}
+                ],
+                neutralPercentage: [
+                    {decade: '1950s', value: 1.0},
+                    {decade: '1960s', value: 1.2},
+                    {decade: '1970s', value: 1.5},
+                    {decade: '1980s', value: 1.7},
+                    {decade: '1990s', value: 1.8},
+                    {decade: '2000s', value: 1.9},
+                    {decade: '2010s', value: 2.0}
+                ]
+            };
+
+            // Main visualization function that takes dataset as parameter
+            function createVisualization(dataset) {
+                // Hide loading indicator
+                document.getElementById("loading-a").style.display = "none";
+                
+                // Clear previous chart if any
+                d3.select("#chart-a").html("");
+                
+                // Setup dimensions
+                const margin = {top: 30, right: 170, bottom: 50, left: 50};
+                const svgWidth = document.getElementById('chart-a').clientWidth;
+                const svgHeight = 400;
+                const width = svgWidth - margin.left - margin.right;
+                const height = svgHeight - margin.top - margin.bottom;
+                
+                // Create SVG
+                const svg = d3.select("#chart-a")
+                    .attr("width", svgWidth)
+                    .attr("height", svgHeight);
+                    
+                const chartGroup = svg.append("g")
+                    .attr("transform", `translate(${margin.left},${margin.top})`);
+                
+                // X scale - decades
+                // Extract decade labels from data and format them
+                const decadeMap = {
+                    '1950s': '50s',
+                    '1960s': '60s',
+                    '1970s': '70s',
+                    '1980s': '80s',
+                    '1990s': '90s',
+                    '2000s': '00s',
+                    '2010s': '10s'
+                };
+                
+                // Update data to use shortened decade format
+                Object.keys(dataset).forEach(key => {
+                    dataset[key].forEach(d => {
+                        d.displayDecade = decadeMap[d.decade] || d.decade;
+                    });
+                });
+                
+                const decades = dataset.loveWords.map(d => d.displayDecade);
+                
+                const xScale = d3.scaleBand()
+                    .domain(decades)
+                    .range([0, width])
+                    .padding(0.1);
+                
+                // Create a continuous x scale for animation
+                const xScaleContinuous = d3.scaleLinear()
+                    .domain([0, decades.length - 1])
+                    .range([xScale(decades[0]) + xScale.bandwidth()/2, xScale(decades[decades.length-1]) + xScale.bandwidth()/2]);
+                
+                // Find max value across all datasets to set y scale
+                let maxValue = 0;
+                Object.keys(dataset).forEach(key => {
+                    const categoryMax = d3.max(dataset[key], d => d.value);
+                    maxValue = Math.max(maxValue, categoryMax);
+                });
+                
+                // Add 10% buffer to the max value
+                maxValue = Math.ceil(maxValue * 1.1);
+                
+                // Y scale
+                const yScale = d3.scaleLinear()
+                    .domain([0, maxValue])
+                    .range([height, 0]);
+                
+                // X axis
+                chartGroup.append("g")
+                    .attr("class", "x-axis")
+                    .attr("transform", `translate(0,${height})`)
+                    .call(d3.axisBottom(xScale).tickSize(0));
+                    
+                // Add Decade label
+                chartGroup.append("text")
+                    .attr("x", width / 2)
+                    .attr("y", -10)
+                    .attr("text-anchor", "middle")
+                    .attr("fill", "#333")
+                    .style("font-size", "16px")
+                    .text("Decade");
+                
+                // Define categories with colors
+                const categories = [
+                    {name: "love words", data: dataset.loveWords, color: "#FF69B4"},
+                    {name: "positive sentiment", data: dataset.positiveSentiment, color: "#483D8B"},
+                    {name: "negative sentiment", data: dataset.negativeSentiment, color: "#2E8B57"},
+                    {name: "swear words", data: dataset.swearWords, color: "#FFA07A"},
+                    {name: "money words", data: dataset.moneyWords, color: "#9932CC"},
+                    {name: "sex words", data: dataset.sexWords, color: "#4169E1"},
+                    {name: "neutral percentage", data: dataset.neutralPercentage, color: "#FF4500"}
+                ];
+                
+                // Setup line generator with linear interpolation (no smoothing)
+                const line = d3.line()
+                    .x(d => xScale(d.displayDecade) + xScale.bandwidth() / 2)
+                    .y(d => yScale(d.value))
+                    .curve(d3.curveLinear); // Use linear curve for straight lines
+                
+                // Create a line path for each category (initially empty)
+                const linePaths = {};
+                categories.forEach(category => {
+                    linePaths[category.name] = chartGroup.append("path")
+                        .attr("class", "line")
+                        .attr("stroke", category.color)
+                        .attr("d", "")
+                        .attr("stroke-width", 3);
+                });
+                
+                // Function to interpolate values based on progress
+                function interpolateValues(data, progress) {
+                    const maxIdx = data.length - 1;
+                    const idx = Math.min(maxIdx, Math.max(0, progress * maxIdx));
+                    const idxLow = Math.floor(idx);
+                    const idxHigh = Math.ceil(idx);
+                    
+                    if (idxLow === idxHigh) return data[idxLow].value;
+                    
+                    const t = idx - idxLow;
+                    return data[idxLow].value * (1 - t) + data[idxHigh].value * t;
+                }
+                
+                // Create dots for each category that will move along the lines
+                const dots = chartGroup.selectAll(".dot-group")
+                    .data(categories)
+                    .enter()
+                    .append("g")
+                    .attr("class", "dot-group");
+                    
+                dots.append("circle")
+                    .attr("class", "dot")
+                    .attr("r", 8)
+                    .attr("fill", d => d.color)
+                    .attr("stroke", "white")
+                    .attr("stroke-width", 2)
+                    .attr("cx", xScaleContinuous(0)) // Start at first decade
+                    .attr("cy", d => yScale(d.data[0].value));
+                    
+                // Add labels
+                const labels = chartGroup.selectAll(".label-group")
+                    .data(categories)
+                    .enter()
+                    .append("g")
+                    .attr("class", "label-group");
+                    
+                labels.append("text")
+                    .attr("class", "line-label")
+                    .attr("x", xScaleContinuous(0) + 15)
+                    .attr("dy", ".35em")
+                    .attr("fill", d => d.color)
+                    .text(d => `- ${d.name} - ${Math.round(d.data[0].value)}%`);
+                
+                // Animation function
+                function animateChart() {
+                    const duration = 5000; // 5 seconds for full animation
+                    const startTime = Date.now();
+                    
+                    function update() {
+                        const elapsed = Date.now() - startTime;
+                        const progress = Math.min(1, elapsed / duration);
+                        
+                        // Calculate current decade index for line drawing
+                        const maxIdx = decades.length - 1;
+                        const decadeIdx = Math.min(maxIdx, progress * maxIdx);
+                        const currentDecade = Math.floor(decadeIdx);
+                        
+                        // Update each category
+                        categories.forEach(category => {
+                            // Get visible data up to current progress
+                            const pointsToDraw = [];
+                            for (let i = 0; i <= currentDecade; i++) {
+                                pointsToDraw.push(category.data[i]);
+                            }
+                            
+                            // If we're between decades, add interpolated point
+                            if (currentDecade < maxIdx && decadeIdx > currentDecade) {
+                                const fraction = decadeIdx - currentDecade;
+                                const startValue = category.data[currentDecade].value;
+                                const endValue = category.data[currentDecade + 1].value;
+                                const interpolatedValue = startValue * (1 - fraction) + endValue * fraction;
+                                
+                                const interpolatedX = xScaleContinuous(decadeIdx);
+                                
+                                // Add final interpolated point
+                                pointsToDraw.push({
+                                    displayDecade: null, // Not used in line drawing
+                                    x: interpolatedX,
+                                    value: interpolatedValue
+                                });
+                            }
+                            
+                            // Draw the line up to the current position
+                            const customLine = d3.line()
+                                .x((d, i) => {
+                                    if (i === pointsToDraw.length - 1 && d.x !== undefined) {
+                                        return d.x;
+                                    }
+                                    return xScale(d.displayDecade) + xScale.bandwidth() / 2;
+                                })
+                                .y(d => yScale(d.value))
+                                .curve(d3.curveLinear);
+                                
+                            linePaths[category.name]
+                                .datum(pointsToDraw)
+                                .attr("d", customLine);
+                        });
+                        
+                        // Update dots positions
+                        dots.select("circle")
+                            .attr("cx", xScaleContinuous(decadeIdx))
+                            .attr("cy", d => {
+                                const value = interpolateValues(d.data, progress);
+                                return yScale(value);
+                            });
+                        
+                        // Update labels
+                        labels.select("text")
+                            .attr("x", xScaleContinuous(decadeIdx) + 15)
+                            .attr("y", d => {
+                                const value = interpolateValues(d.data, progress);
+                                return yScale(value);
+                            })
+                            .text(d => {
+                                const value = interpolateValues(d.data, progress);
+                                return `- ${d.name} - ${Math.round(value)}%`;
+                            });
+                        
+                        if (progress < 1) {
+                            requestAnimationFrame(update);
+                        }
+                    }
+                    
+                    update();
+                }
+                
+                // Add music notes to the header
+                const musicNotesGroup = d3.select(".music-notes");
+                musicNotesGroup.html("");
+                
+                const notes = [
+                    {x: 20, y: 30, type: "treble"},
+                    {x: 45, y: 15, type: "quarter"},
+                    {x: 60, y: 25, type: "eighth"},
+                    {x: 75, y: 10, type: "quarter"},
+                    {x: 90, y: 20, type: "eighth"}
+                ];
+                
+                // Add music notes
+                notes.forEach(note => {
+                    if (note.type === "treble") {
+                        musicNotesGroup.append("text")
+                            .attr("x", note.x)
+                            .attr("y", note.y)
+                            .attr("font-size", "28px")
+                            .text("𝄞")
+                            .attr("fill", "#333");
+                    } else if (note.type === "quarter") {
+                        musicNotesGroup.append("text")
+                            .attr("x", note.x)
+                            .attr("y", note.y)
+                            .attr("font-size", "20px")
+                            .text("♩")
+                            .attr("fill", "#333");
+                    } else if (note.type === "eighth") {
+                        musicNotesGroup.append("text")
+                            .attr("x", note.x)
+                            .attr("y", note.y)
+                            .attr("font-size", "20px")
+                            .text("♪")
+                            .attr("fill", "#333");
+                    }
+                });
+                
+                // Add curved line for music staff
+                const staffLine = d3.line()
+                    .x(d => d.x)
+                    .y(d => d.y)
+                    .curve(d3.curveBasis);
+                    
+                const staffPoints = [
+                    {x: 10, y: 40},
+                    {x: 30, y: 35},
+                    {x: 50, y: 38},
+                    {x: 70, y: 30},
+                    {x: 90, y: 35},
+                    {x: 110, y: 32}
+                ];
+                
+                musicNotesGroup.append("path")
+                    .datum(staffPoints)
+                    .attr("d", staffLine)
+                    .attr("fill", "none")
+                    .attr("stroke", "#333")
+                    .attr("stroke-width", 1.5);
+                    
+                // Start animation
+                setTimeout(animateChart, 300);
+            }
+            
+            // Load and process the CSV data
+            function loadData() {
+                // Try to load the CSV file
+                d3.csv("lyrics_aggregated_data.csv").then(data => {
+                    // Process the data
+                    const dataset = {
+                        loveWords: [],
+                        positiveSentiment: [],
+                        negativeSentiment: [],
+                        swearWords: [],
+                        moneyWords: [],
+                        sexWords: [],
+                        neutralPercentage: []
+                    };
+                    
+                    // For each row in the CSV
+                    data.forEach(d => {
+                        // Extract data for each category
+                        dataset.loveWords.push({
+                            decade: d.decade,
+                            value: parseFloat(d.love_words)
+                        });
+                        
+                        dataset.positiveSentiment.push({
+                            decade: d.decade,
+                            value: parseFloat(d.positive_sentiment)
+                        });
+                        
+                        dataset.negativeSentiment.push({
+                            decade: d.decade,
+                            value: parseFloat(d.negative_sentiment)
+                        });
+                        
+                        dataset.swearWords.push({
+                            decade: d.decade,
+                            value: parseFloat(d.swear_words)
+                        });
+                        
+                        dataset.moneyWords.push({
+                            decade: d.decade,
+                            value: parseFloat(d.money_words)
+                        });
+                        
+                        dataset.sexWords.push({
+                            decade: d.decade,
+                            value: parseFloat(d.sex_words)
+                        });
+                        
+                        dataset.neutralPercentage.push({
+                            decade: d.decade,
+                            value: parseFloat(d.neutral_percentage)
+                        });
+                    });
+                    
+                    // Sort data by decade to ensure proper order
+                    const decadeOrder = {
+                        '1950s': 0, '1960s': 1, '1970s': 2, '1980s': 3, 
+                        '1990s': 4, '2000s': 5, '2010s': 6
+                    };
+                    
+                    const sortByDecade = (a, b) => {
+                        return decadeOrder[a.decade] - decadeOrder[b.decade];
+                    };
+                    
+                    Object.keys(dataset).forEach(key => {
+                        dataset[key].sort(sortByDecade);
+                    });
+                    
+                    // Create visualization with processed data
+                    createVisualization(dataset);
+                }).catch(error => {
+                    console.error("Error loading data:", error);
+                    // If error, use the predefined dataset
+                    createVisualization(dataset);
+                });
+            }
+            
+            // Initialize the visualization
+            document.addEventListener("DOMContentLoaded", () => {
+                loadData();
+            });
+            
+            // Add replay button functionality
+            document.getElementById("replay").addEventListener("click", () => {
+                loadData();
+            });
+        })();
+
+        // ===========================
+        // MODULE C: Valence Trends Across Languages
+        // ===========================
+        (function() {
+            // Global variables
+            let data = {
+                means: null,
+                trends: null
+            };
+            
+            let chart, tooltip;
+            
+            // Initialize chart dimensions
+            const margin = {top: 40, right: 40, bottom: 100, left: 80};
+            let width, height;
+            
+            // Color scales for different data types
+            const trendColorScale = d3.scaleLinear()
+                .domain([-0.01, 0, 0.01])
+                .range(["#e74c3c", "#f39c12", "#2ecc71"]);
+                
+            const meanColorScales = {
+                valence: d3.scaleLinear().domain([0, 0.5]).range(["#3498db", "#e74c3c"]),
+                arousal: d3.scaleLinear().domain([0, 0.5]).range(["#9b59b6", "#f1c40f"]),
+                dominance: d3.scaleLinear().domain([0.3, 0.7]).range(["#16a085", "#e67e22"])
+            };
+            
+            // Format numbers for display
+            const formatNumber = d3.format(".4f");
+            const formatPercent = d3.format(".1%");
+            
+            // Load data files
+            Promise.all([
+                d3.csv("./processed_data2/language_emotion_means.csv"),
+                d3.csv("./processed_data2/language_emotion_trends.csv")
+            ]).then(([meansData, trendsData]) => {
+                // Process means data
+                data.means = {};
+                ["valence", "arousal", "dominance"].forEach(emotion => {
+                    data.means[emotion] = meansData.map(d => ({
+                        language: d.language,
+                        value: +d[`${emotion}_mean`],
+                        sampleCount: +d.sample_count
+                    })).sort((a, b) => a.value - b.value);
+                });
+                
+                // Process trends data
+                data.trends = {};
+                ["valence", "arousal", "dominance"].forEach(emotion => {
+                    data.trends[emotion] = trendsData.map(d => ({
+                        language: d.language,
+                        value: +d[`${emotion}_trend`],
+                        sampleCount: +d.sample_count
+                    })).sort((a, b) => a.value - b.value);
+                });
+                
+                // Hide loading indicator
+                document.getElementById("loading-c").style.display = "none";
+                
+                // Initialize chart
+                initializeChart();
+                
+                // Draw initial chart
+                updateChart();
+            }).catch(error => {
+                console.error("Error loading data:", error);
+                document.getElementById("loading-c").textContent = "Error loading data. Please check console for details.";
+            });
+            
+            function initializeChart() {
+                // Get chart container dimensions
+                const chartContainer = document.querySelector('.module-c .chart-area');
+                width = chartContainer.clientWidth - margin.left - margin.right;
+                height = 600 - margin.top - margin.bottom;
+                
+                // Create SVG and chart group
+                chart = d3.select("#chart-c")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("transform", `translate(${margin.left}, ${margin.top})`);
+                
+                // Add tooltip
+                tooltip = d3.select(".module-c .chart-area")
+                    .append("div")
+                    .attr("class", "tooltip")
+                    .style("opacity", 0);
+                    
+                // Add event listeners for controls
+                d3.select("#dataType").on("change", updateChart);
+                d3.select("#emotionType").on("change", updateChart);
+                
+                // Add y-axis label
+                chart.append("text")
+                    .attr("class", "axis-label y-axis-label")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", -60)
+                    .attr("x", -height / 2)
+                    .attr("text-anchor", "middle")
+                    .text("Change Over Time");
+                
+                // Add x-axis label
+                chart.append("text")
+                    .attr("class", "axis-label x-axis-label")
+                    .attr("transform", `translate(${width / 2}, ${height + 70})`)
+                    .attr("text-anchor", "middle")
+                    .text("Language");
+                    
+                // Add baseline for reference
+                chart.append("line")
+                    .attr("class", "baseline")
+                    .attr("stroke", "#000")
+                    .attr("stroke-width", 1)
+                    .attr("x1", 0)
+                    .attr("x2", width)
+                    .attr("y1", height / 2)
+                    .attr("y2", height / 2)
+                    .attr("opacity", 0);
+            }
+            
+            function updateChart() {
+                // Get current selection
+                const dataType = d3.select("#dataType").property("value");
+                const emotionType = d3.select("#emotionType").property("value");
+                
+                // Get appropriate data
+                const chartData = (dataType === "trend") 
+                    ? data.trends[emotionType] 
+                    : data.means[emotionType];
+                
+                // Update chart title
+                const emotionNames = {
+                    valence: "Valence (Positivity)",
+                    arousal: "Arousal (Energy)",
+                    dominance: "Dominance (Control)"
+                };
+                
+                const titleElement = document.querySelector('.module-c h1');
+                if (dataType === "trend") {
+                    titleElement.textContent = `${emotionNames[emotionType]} Trends Across Languages`;
+                    d3.select(".y-axis-label").text("Regression Coefficient (Change Per Year)");
+                } else {
+                    titleElement.textContent = `Average ${emotionNames[emotionType]} Across Languages`;
+                    d3.select(".y-axis-label").text("Average Value");
+                }
+                
+                // Setup scales
+                const xScale = d3.scaleBand()
+                    .domain(chartData.map(d => d.language))
+                    .range([0, width])
+                    .padding(0.2);
+                    
+                let yScale;
+                if (dataType === "trend") {
+                    // For trends, center at 0
+                    const maxAbsValue = Math.max(
+                        Math.abs(d3.min(chartData, d => d.value)),
+                        Math.abs(d3.max(chartData, d => d.value))
+                    ) * 1.1;
+                    yScale = d3.scaleLinear()
+                        .domain([-maxAbsValue, maxAbsValue])
+                        .range([height, 0]);
+                } else {
+                    // For means, use appropriate range with buffer
+                    const minValue = d3.min(chartData, d => d.value) * 0.9;
+                    const maxValue = d3.max(chartData, d => d.value) * 1.1;
+                    yScale = d3.scaleLinear()
+                        .domain([minValue, maxValue])
+                        .range([height, 0]);
+                }
+                
+                // Create axes
+                const xAxis = d3.axisBottom(xScale);
+                const yAxis = d3.axisLeft(yScale);
+                
+                // Update or create x-axis
+                if (chart.select(".x-axis").empty()) {
+                    chart.append("g")
+                        .attr("class", "x-axis")
+                        .attr("transform", `translate(0, ${height})`)
+                        .call(xAxis)
+                        .selectAll("text")
+                        .attr("transform", "rotate(-45)")
+                        .style("text-anchor", "end")
+                        .attr("dx", "-.8em")
+                        .attr("dy", ".15em");
+                } else {
+                    chart.select(".x-axis")
+                        .transition()
+                        .duration(1000)
+                        .call(xAxis)
+                        .selectAll("text")
+                        .attr("transform", "rotate(-45)")
+                        .style("text-anchor", "end")
+                        .attr("dx", "-.8em")
+                        .attr("dy", ".15em");
+                }
+                
+                // Update or create y-axis
+                if (chart.select(".y-axis").empty()) {
+                    chart.append("g")
+                        .attr("class", "y-axis")
+                        .call(yAxis);
+                } else {
+                    chart.select(".y-axis")
+                        .transition()
+                        .duration(1000)
+                        .call(yAxis);
+                }
+                
+                // Add grid lines for y-axis
+                const yGrid = chart.selectAll(".y-grid-line")
+                    .data(yScale.ticks());
+                    
+                yGrid.exit().remove();
+                
+                const yGridEnter = yGrid.enter()
+                    .append("line")
+                    .attr("class", "y-grid-line y-line");
+                    
+                yGrid.merge(yGridEnter)
+                    .transition()
+                    .duration(1000)
+                    .attr("x1", 0)
+                    .attr("x2", width)
+                    .attr("y1", d => yScale(d))
+                    .attr("y2", d => yScale(d));
+                
+                // Update baseline position
+                const zeroPosition = (dataType === "trend") 
+                    ? yScale(0) 
+                    : height;
+                    
+                chart.select(".baseline")
+                    .transition()
+                    .duration(1000)
+                    .attr("y1", zeroPosition)
+                    .attr("y2", zeroPosition)
+                    .attr("opacity", 1);
+                
+                // Update/create bars
+                const bars = chart.selectAll(".bar")
+                    .data(chartData, d => d.language);
+                    
+                bars.exit()
+                    .transition()
+                    .duration(500)
+                    .attr("y", zeroPosition)
+                    .attr("height", 0)
+                    .remove();
+                    
+                const barsEnter = bars.enter()
+                    .append("rect")
+                    .attr("class", "bar gradient-bar")
+                    .attr("x", d => xScale(d.language))
+                    .attr("width", xScale.bandwidth())
+                    .attr("y", zeroPosition)
+                    .attr("height", 0)
+                    .attr("rx", 2)
+                    .attr("ry", 2)
+                    .on("mouseover", function(event, d) {
+                        d3.select(this)
+                            .transition()
+                            .duration(200)
+                            .attr("opacity", 0.8);
+                            
+                        tooltip.transition()
+                            .duration(200)
+                            .style("opacity", 0.9);
+                            
+                        let tooltipText = `<strong>${d.language}</strong><br>`;
+                        
+                        if (dataType === "trend") {
+                            tooltipText += `${emotionNames[emotionType]} Trend: ${formatNumber(d.value)}<br>`;
+                            tooltipText += `Sample Count: ${d.sampleCount}`;
+                        } else {
+                            tooltipText += `${emotionNames[emotionType]}: ${formatNumber(d.value)}<br>`;
+                            tooltipText += `Sample Count: ${d.sampleCount}`;
+                        }
+                        
+                        tooltip.html(tooltipText)
+                            .style("left", (event.pageX + 10) + "px")
+                            .style("top", (event.pageY - 28) + "px");
+                    })
+                    .on("mouseout", function() {
+                        d3.select(this)
+                            .transition()
+                            .duration(200)
+                            .attr("opacity", 1);
+                            
+                        tooltip.transition()
+                            .duration(500)
+                            .style("opacity", 0);
+                    });
+                
+                // Update all bars with transition
+                barsEnter.merge(bars)
+                    .transition()
+                    .duration(1000)
+                    .attr("x", d => xScale(d.language))
+                    .attr("width", xScale.bandwidth())
+                    .attr("y", d => d.value >= 0 ? yScale(d.value) : zeroPosition)
+                    .attr("height", d => Math.abs(zeroPosition - yScale(d.value)))
+                    .attr("fill", d => {
+                        if (dataType === "trend") {
+                            return trendColorScale(d.value);
+                        } else {
+                            return meanColorScales[emotionType](d.value);
+                        }
+                    });
+            }
+            
+            // Handle window resize for this module
+            function handleModuleCResize() {
+                // Get new chart dimensions
+                const chartContainer = document.querySelector('.module-c .chart-area');
+                width = chartContainer.clientWidth - margin.left - margin.right;
+                
+                // Update SVG size
+                d3.select("#chart-c")
+                    .attr("width", width + margin.left + margin.right);
+                
+                // Remove existing chart elements
+                chart.selectAll("*").remove();
+                
+                // Reinitialize chart with new dimensions
+                initializeChart();
+                
+                // Redraw chart
+                updateChart();
+            }
+            
+            // Add to window resize event
+            window.addEventListener("resize", () => {
+                clearTimeout(window.resizeTimerC);
+                window.resizeTimerC = setTimeout(handleModuleCResize, 250);
+            });
+        })();
+
+        // ===========================
+        // MODULE E: Valence & Arousal Relationship
+        // ===========================
+        (function() {
+            // Scatter plot dimensions
+            const scatterMargin = {top: 40, right: 100, bottom: 60, left: 60};
+            const scatterWidth = 850 - scatterMargin.left - scatterMargin.right;
+            const scatterHeight = 450 - scatterMargin.top - scatterMargin.bottom;
+            
+            // Bar chart dimensions
+            const barMargin = {top: 20, right: 30, bottom: 100, left: 60};
+            const barWidth = 850 - barMargin.left - barMargin.right;
+            const barHeight = 350 - barMargin.top - barMargin.bottom;
+            
+            // Create SVG for scatter plot
+            const scatterSvg = d3.select("#scatter-plot")
+              .append("svg")
+                .attr("width", scatterWidth + scatterMargin.left + scatterMargin.right)
+                .attr("height", scatterHeight + scatterMargin.top + scatterMargin.bottom)
+              .append("g")
+                .attr("transform", `translate(${scatterMargin.left},${scatterMargin.top})`);
+            
+            // Create SVG for bar chart
+            const barSvg = d3.select("#bar-chart")
+              .append("svg")
+                .attr("width", barWidth + barMargin.left + barMargin.right)
+                .attr("height", barHeight + barMargin.top + barMargin.bottom)
+              .append("g")
+                .attr("transform", `translate(${barMargin.left},${barMargin.top})`);
+            
+            // Custom color scheme with softer, more harmonious colors
+            const colorScheme = [
+              "#4e79a7", "#f28e2c", "#e15759", "#76b7b2", "#59a14f",
+              "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ab",
+              "#6b9ac4", "#d67553", "#87c293", "#b279a2", "#808080",
+              "#9d7660", "#d3a294", "#a2d6a2", "#e98d6b", "#b57aa3",
+              "#85a9c7", "#e49757", "#7abfb5", "#f1a2a5", "#b9b07d"
+            ];
+            
+            // Create scales
+            const scatterX = d3.scaleLinear().range([0, scatterWidth]);
+            const scatterY = d3.scaleLinear().range([scatterHeight, 0]);
+            const barX = d3.scaleBand().range([0, barWidth]).padding(0.2);
+            const barY = d3.scaleLinear().range([barHeight, 0]);
+            const color = d3.scaleOrdinal().range(colorScheme);
+            
+            // Create a tooltip div that will be hidden initially
+            const tooltipE = d3.select("body").append("div")
+              .attr("class", "tooltip")
+              .style("opacity", 0);
+            
+            // Sample data for development (will be replaced with actual data)
+            const sampleData = [
+                { language: "english", valence_mean: 0.17, arousal_mean: 0.21 },
+                { language: "spanish", valence_mean: 0.19, arousal_mean: 0.17 },
+                { language: "french", valence_mean: 0.22, arousal_mean: 0.15 },
+                { language: "german", valence_mean: 0.16, arousal_mean: 0.12 },
+                { language: "italian", valence_mean: 0.25, arousal_mean: 0.14 },
+                { language: "portuguese", valence_mean: 0.21, arousal_mean: 0.19 },
+                { language: "russian", valence_mean: 0.14, arousal_mean: 0.11 },
+                { language: "japanese", valence_mean: 0.18, arousal_mean: 0.13 },
+                { language: "korean", valence_mean: 0.20, arousal_mean: 0.18 },
+                { language: "chinese", valence_mean: 0.15, arousal_mean: 0.10 },
+                { language: "arabic", valence_mean: 0.23, arousal_mean: 0.16 },
+                { language: "hindi", valence_mean: 0.26, arousal_mean: 0.22 },
+                { language: "bengali", valence_mean: 0.24, arousal_mean: 0.20 },
+                { language: "swahili", valence_mean: 0.30, arousal_mean: 0.19 },
+                { language: "tagalog", valence_mean: 0.22, arousal_mean: 0.13 },
+                { language: "thai", valence_mean: 0.17, arousal_mean: 0.09 },
+                { language: "turkish", valence_mean: 0.19, arousal_mean: 0.15 },
+                { language: "polish", valence_mean: 0.21, arousal_mean: 0.14 },
+                { language: "dutch", valence_mean: 0.18, arousal_mean: 0.11 },
+                { language: "greek", valence_mean: 0.15, arousal_mean: 0.13 },
+                { language: "hebrew", valence_mean: 0.22, arousal_mean: 0.17 },
+                { language: "swedish", valence_mean: 0.20, arousal_mean: 0.12 },
+                { language: "norwegian", valence_mean: 0.19, arousal_mean: 0.11 },
+                { language: "danish", valence_mean: 0.17, arousal_mean: 0.10 },
+                { language: "finnish", valence_mean: 0.16, arousal_mean: 0.09 },
+                { language: "czech", valence_mean: 0.18, arousal_mean: 0.13 },
+                { language: "slovak", valence_mean: 0.17, arousal_mean: 0.12 },
+                { language: "hungarian", valence_mean: 0.19, arousal_mean: 0.14 },
+                { language: "romanian", valence_mean: 0.21, arousal_mean: 0.15 },
+                { language: "ukrainian", valence_mean: 0.18, arousal_mean: 0.11 },
+                { language: "albanian", valence_mean: 0.24, arousal_mean: 0.20 },
+                { language: "somali", valence_mean: 0.34, arousal_mean: 0.21 },
+                { language: "hawaiian", valence_mean: 0.33, arousal_mean: 0.20 },
+                { language: "azeri", valence_mean: 0.20, arousal_mean: 0.19 },
+                { language: "cebuano", valence_mean: 0.29, arousal_mean: 0.18 },
+                { language: "hausa", valence_mean: 0.16, arousal_mean: 0.10 }
+            ];
+            
+            // Load data and create visualizations
+            d3.json("lang_emotion.json").then(data => {
+                // Set domains for scales
+                scatterX.domain([0.08, d3.max(data, d => d.valence_mean) * 1.05]);
+                scatterY.domain([0, d3.max(data, d => d.arousal_mean) * 1.1]);
+                
+                // Add background grid for scatter plot
+                scatterSvg.append("g")
+                    .attr("class", "grid")
+                    .attr("transform", `translate(0,${scatterHeight})`)
+                    .call(d3.axisBottom(scatterX)
+                      .tickSize(-scatterHeight)
+                      .tickFormat("")
+                    );
+                
+                scatterSvg.append("g")
+                    .attr("class", "grid")
+                    .call(d3.axisLeft(scatterY)
+                      .tickSize(-scatterWidth)
+                      .tickFormat("")
+                    );
+                
+                // Add X axis for scatter plot
+                scatterSvg.append("g")
+                    .attr("class", "axis x-axis")
+                    .attr("transform", `translate(0,${scatterHeight})`)
+                    .call(d3.axisBottom(scatterX).ticks(6))
+                    .call(g => g.select(".domain").remove());
+                
+                // Add Y axis for scatter plot
+                scatterSvg.append("g")
+                    .attr("class", "axis y-axis")
+                    .call(d3.axisLeft(scatterY).ticks(5))
+                    .call(g => g.select(".domain").remove());
+                
+                // Add axis labels
+                scatterSvg.append("text")
+                    .attr("class", "axis-label")
+                    .attr("x", scatterWidth / 2)
+                    .attr("y", scatterHeight + 40)
+                    .attr("text-anchor", "middle")
+                    .text("Valence Mean (Positivity)");
+                
+                scatterSvg.append("text")
+                    .attr("class", "axis-label")
+                    .attr("transform", "rotate(-90)")
+                    .attr("x", -scatterHeight / 2)
+                    .attr("y", -40)
+                    .attr("text-anchor", "middle")
+                    .text("Arousal Mean (Intensity)");
+                
+                // Add dots for scatter plot
+                const dots = scatterSvg.selectAll(".dot")
+                    .data(data)
+                    .enter()
+                    .append("circle")
+                    .attr("class", "dot")
+                    .attr("cx", d => scatterX(d.valence_mean))
+                    .attr("cy", d => scatterY(d.arousal_mean))
+                    .attr("r", 6)
+                    .attr("fill", d => color(d.language))
+                    .attr("stroke", "white")
+                    .attr("stroke-width", 1)
+                    .on("mouseover", function(event, d) {
+                      d3.select(this)
+                        .transition()
+                        .duration(200)
+                        .attr("r", 8);
+                      
+                      tooltipE.transition()
+                        .duration(200)
+                        .style("opacity", 0.9);
+                      
+                      tooltipE.html(`
+                        <h4>${d.language}</h4>
+                        <p>Valence: <b>${d.valence_mean.toFixed(3)}</b></p>
+                        <p>Arousal: <b>${d.arousal_mean.toFixed(3)}</b></p>
+                      `)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                    })
+                    .on("mouseout", function() {
+                      d3.select(this)
+                        .transition()
+                        .duration(200)
+                        .attr("r", 6);
+                      
+                      tooltipE.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                    });
+                
+                // Add language labels only for selected points
+                const labelThreshold = 0.20; // Only label languages with higher values
+                scatterSvg.selectAll(".dot-label")
+                    .data(data)
+                    .enter()
+                    .append("text")
+                    .attr("class", "dot-label")
+                    .attr("x", d => scatterX(d.valence_mean) + 8)
+                    .attr("y", d => scatterY(d.arousal_mean) + 4)
+                    .text(d => (d.arousal_mean > labelThreshold || d.valence_mean > 0.28) ? d.language : "")
+                    .style("font-size", "10px")
+                    .style("fill", "#444");
+                
+                // Add legend for scatter plot
+                const legend = scatterSvg.append("g")
+                    .attr("class", "legend")
+                    .attr("transform", `translate(${scatterWidth + 20}, 0)`);
+                
+                // Get top languages by combined value for legend
+                const topLanguages = data.slice()
+                    .sort((a, b) => (b.valence_mean + b.arousal_mean) - (a.valence_mean + a.arousal_mean))
+                    .slice(0, 10);
+                
+                legend.selectAll(".legend-dot")
+                    .data(topLanguages)
+                    .enter()
+                    .append("circle")
+                    .attr("class", "legend-dot")
+                    .attr("cx", 0)
+                    .attr("cy", (d, i) => 20 + i * 20)
+                    .attr("r", 5)
+                    .attr("fill", d => color(d.language));
+                
+                legend.selectAll(".legend-label")
+                    .data(topLanguages)
+                    .enter()
+                    .append("text")
+                    .attr("class", "legend-item")
+                    .attr("x", 10)
+                    .attr("y", (d, i) => 20 + i * 20)
+                    .attr("dy", "0.32em")
+                    .text(d => d.language)
+                    .style("font-size", "11px")
+                    .on("mouseover", function(event, d) {
+                      // Highlight corresponding dot
+                      dots.filter(dot => dot.language === d.language)
+                        .transition()
+                        .duration(200)
+                        .attr("r", 9)
+                        .attr("stroke-width", 2);
+                      
+                      d3.select(this).style("font-weight", "bold");
+                    })
+                    .on("mouseout", function(event, d) {
+                      // Restore dot size
+                      dots.filter(dot => dot.language === d.language)
+                        .transition()
+                        .duration(200)
+                        .attr("r", 6)
+                        .attr("stroke-width", 1);
+                      
+                      d3.select(this).style("font-weight", "normal");
+                    });
+                
+                // Add title for legend
+                legend.append("text")
+                    .attr("x", 0)
+                    .attr("y", 0)
+                    .style("font-size", "12px")
+                    .style("font-weight", "bold")
+                    .text("Top Languages");
+                
+                // Handle dimension selection and update bar chart
+                document.getElementById("dimension-select").addEventListener("change", function() {
+                    const dimension = this.value;
+                    const dimensionName = dimension === "valence_mean" ? "Valence" : "Arousal";
+                    document.getElementById("bar-chart-title").textContent = `Average ${dimensionName} Across Languages`;
+                    updateBarChart(data, dimension);
+                });
+                
+                // Initial bar chart
+                updateBarChart(data, "valence_mean");
+            }).catch(error => {
+                console.error("Error loading the data:", error);
+                // Use sample data if actual data loading fails
+                updateBarChart(sampleData, "valence_mean");
+            });
+            
+            // Function to update bar chart based on selected dimension
+            function updateBarChart(data, dimension) {
+                // Sort data by selected dimension
+                const sortedData = data.slice()
+                    .sort((a, b) => d3.descending(a[dimension], b[dimension]));
+                
+                // Update scales
+                barX.domain(sortedData.map(d => d.language));
+                
+                // Adjust y scale domain with 10% padding
+                const maxValue = d3.max(sortedData, d => d[dimension]);
+                barY.domain([0, maxValue * 1.1]).nice();
+                
+                // Clear previous chart
+                barSvg.selectAll(".axis").remove();
+                
+                // Add grid lines
+                barSvg.append("g")
+                    .attr("class", "grid")
+                    .call(d3.axisLeft(barY)
+                      .tickSize(-barWidth)
+                      .tickFormat("")
+                    );
+                
+                // Add X axis
+                barSvg.append("g")
+                    .attr("class", "axis x-axis")
+                    .attr("transform", `translate(0,${barHeight})`)
+                    .call(d3.axisBottom(barX))
+                    .selectAll("text")
+                    .attr("transform", "rotate(-45)")
+                    .style("text-anchor", "end")
+                    .attr("dx", "-.8em")
+                    .attr("dy", ".15em");
+                
+                // Add Y axis
+                barSvg.append("g")
+                    .attr("class", "axis y-axis")
+                    .call(d3.axisLeft(barY).ticks(5))
+                    .call(g => g.select(".domain").remove());
+                
+                // Add Y axis label
+                const dimensionLabel = dimension === "valence_mean" ? "Valence (Positivity)" : "Arousal (Intensity)";
+                
+                barSvg.append("text")
+                    .attr("class", "axis-label")
+                    .attr("transform", "rotate(-90)")
+                    .attr("x", -barHeight / 2)
+                    .attr("y", -40)
+                    .attr("text-anchor", "middle")
+                    .text(dimensionLabel);
+                
+                // Transition for updating bars
+                const barGroups = barSvg.selectAll(".bar-group")
+                    .data(sortedData, d => d.language);
+                
+                // Remove old bars
+                barGroups.exit().remove();
+                
+                // Add new bar groups
+                const enterGroups = barGroups.enter()
+                    .append("g")
+                    .attr("class", "bar-group");
+                
+                // Add bars
+                enterGroups.append("rect")
+                    .attr("class", "bar")
+                    .attr("x", d => barX(d.language))
+                    .attr("y", d => barY(d[dimension]))
+                    .attr("width", barX.bandwidth())
+                    .attr("height", d => barHeight - barY(d[dimension]))
+                    .attr("fill", d => color(d.language))
+                    .attr("rx", 2) // Rounded corners
+                    .on("mouseover", function(event, d) {
+                      d3.select(this).attr("opacity", 0.8);
+                      
+                      tooltipE.transition()
+                        .duration(200)
+                        .style("opacity", 0.9);
+                      
+                      const dimensionName = dimension === "valence_mean" ? "Valence" : "Arousal";
+                      tooltipE.html(`
+                        <h4>${d.language}</h4>
+                        <p>${dimensionName}: <b>${d[dimension].toFixed(3)}</b></p>
+                      `)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                    })
+                    .on("mouseout", function() {
+                      d3.select(this).attr("opacity", 1);
+                      
+                      tooltipE.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                    });
+                
+                // Add labels on top of bars
+                enterGroups.append("text")
+                    .attr("class", "bar-label")
+                    .attr("x", d => barX(d.language) + barX.bandwidth() / 2)
+                    .attr("y", d => barY(d[dimension]) - 5)
+                    .attr("text-anchor", "middle")
+                    .text(d => d[dimension].toFixed(2));
+                
+                // Update existing bars with transition
+                barGroups.select(".bar")
+                    .transition()
+                    .duration(750)
+                    .attr("x", d => barX(d.language))
+                    .attr("y", d => barY(d[dimension]))
+                    .attr("width", barX.bandwidth())
+                    .attr("height", d => barHeight - barY(d[dimension]));
+                
+                // Update labels with transition
+                barGroups.select(".bar-label")
+                    .transition()
+                    .duration(750)
+                    .attr("x", d => barX(d.language) + barX.bandwidth() / 2)
+                    .attr("y", d => barY(d[dimension]) - 5)
+                    .text(d => d[dimension].toFixed(2));
+                
+                // Combine enter and update selections
+                barGroups.merge(enterGroups);
+            }
+        })();
+
+        // ===========================
+        // MODULE B: Lyrical Emotion Trends by Language
+        // ===========================
+        (function() {
+            // Emotion metric display names
+            const emotionDisplayNames = {
+                'valence_mean': 'Valence (Positivity)',
+                'arousal_mean': 'Arousal (Energy/Intensity)',
+                'dominance_mean': 'Dominance (Control/Power)'
+            };
+            
+            // Emotion short names for file loading
+            const emotionShortNames = {
+                'valence_mean': 'valence',
+                'arousal_mean': 'arousal',
+                'dominance_mean': 'dominance'
+            };
+            
+            // References to DOM elements
+            const languageSelect = document.getElementById('language-select');
+            const emotionSelect = document.getElementById('emotion-select');
+            const chartArea = document.getElementById('chart-area');
+            
+            // Load language summary data
+            fetch("./processed_data/language_summary.json")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Network error: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Populate language dropdown
+                    const languageOptions = [];
+                    
+                    Object.entries(data).forEach(([language, info]) => {
+                        languageOptions.push({
+                            name: language.charAt(0).toUpperCase() + language.slice(1),
+                            value: language,
+                            songCount: info.song_count
+                        });
+                    });
+                    
+                    // Sort by language name
+                    languageOptions.sort((a, b) => a.name.localeCompare(b.name));
+                    
+                    // Add options to select
+                    languageOptions.forEach(lang => {
+                        const option = document.createElement('option');
+                        option.value = lang.value;
+                        option.textContent = `${lang.name} (${lang.songCount} songs)`;
+                        languageSelect.appendChild(option);
+                    });
+                    
+                    // Store the summary data for later use
+                    window.languageSummary = data;
+                    
+                    // Enable language select
+                    languageSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error loading language summary:', error);
+                    chartArea.innerHTML = `
+                        <div class="no-data">
+                            <div class="no-data-icon">⚠️</div>
+                            <h3>Error loading data</h3>
+                            <p>${error.message}</p>
+                        </div>
+                    `;
+                });
+            
+            // Handle language selection change
+            languageSelect.addEventListener('change', function() {
+                const selectedLanguage = this.value;
+                
+                // Clear emotion select and chart
+                emotionSelect.innerHTML = '<option value="">Select an emotion metric</option>';
+                showNoDataMessage();
+                
+                if (!selectedLanguage) {
+                    emotionSelect.disabled = true;
+                    return;
+                }
+                
+                // Get emotions available for this language
+                const languageInfo = window.languageSummary[selectedLanguage];
+                if (!languageInfo || !languageInfo.emotions || languageInfo.emotions.length === 0) {
+                    emotionSelect.disabled = true;
+                    return;
+                }
+                
+                // Populate emotion dropdown
+                languageInfo.emotions.forEach(emotion => {
+                    const option = document.createElement('option');
+                    option.value = emotion;
+                    option.textContent = emotionDisplayNames[emotion] || emotion;
+                    emotionSelect.appendChild(option);
+                });
+                
+                // Enable emotion select
+                emotionSelect.disabled = false;
+            });
+            
+            // Handle emotion selection change
+            emotionSelect.addEventListener('change', function() {
+                const selectedEmotion = this.value;
+                const selectedLanguage = languageSelect.value;
+                
+                if (!selectedLanguage || !selectedEmotion) {
+                    showNoDataMessage();
+                    return;
+                }
+                
+                // Load and visualize data
+                loadVisualizationData(selectedLanguage, selectedEmotion);
+            });
+            
+            // Function to load and visualize data
+            function loadVisualizationData(language, emotion) {
+                // Show loading state
+                showLoadingMessage();
+                
+                // Get the short name for the emotion
+                const emotionShort = emotionShortNames[emotion] || emotion.split('_')[0];
+                
+                // Construct the file path
+                const filePath = `./processed_data/${language}_${emotionShort}.csv`;
+                
+                // Load the data
+                d3.csv(filePath)
+                    .then(data => {
+                        // Convert string data to numbers
+                        data.forEach(d => {
+                            d.year = +d.year;
+                            d.value = +d.value;
+                            d.count = +d.count;
+                            d.std = +d.std;
+                            d.predicted = +d.predicted;
+                        });
+                        
+                        // Create visualization
+                        createVisualization(data, language, emotion);
+                    })
+                    .catch(error => {
+                        console.error(`Error loading data for ${language}/${emotion}:`, error);
+                        chartArea.innerHTML = `
+                            <div class="no-data">
+                                <div class="no-data-icon">⚠️</div>
+                                <h3>Error loading visualization data</h3>
+                                <p>Could not load data for ${language} ${emotionDisplayNames[emotion]}</p>
+                            </div>
+                        `;
+                    });
+            }
+            
+            // Function to show loading message
+            function showLoadingMessage() {
+                chartArea.innerHTML = `
+                    <div class="loading">
+                        <span>Loading visualization</span>
+                        <div class="loading-spinner"></div>
+                    </div>
+                `;
+            }
+            
+            // Function to show no data message
+            function showNoDataMessage() {
+                chartArea.innerHTML = `
+                    <div class="no-data">
+                        <div class="no-data-icon">📊</div>
+                        <h3>Select a language and emotion metric to get started</h3>
+                        <p>You'll see how that emotional attribute in lyrics has changed over time.</p>
+                    </div>
+                `;
+            }
+            
+            // Function to create the visualization
+            function createVisualization(data, language, emotion) {
+                // Clear chart area
+                chartArea.innerHTML = '<svg id="chart-b"></svg>';
+                
+                // Get the display name of the emotion
+                const emotionDisplay = emotionDisplayNames[emotion] || emotion;
+                
+                // Calculate slope from data (get from first datapoint since it's the same for all)
+                const slope = (data[data.length-1].predicted - data[0].predicted) / (data[data.length-1].year - data[0].year);
+                
+                // Setup dimensions
+                const margin = {top: 40, right: 30, bottom: 60, left: 60};
+                const width = chartArea.clientWidth - margin.left - margin.right;
+                const height = 500 - margin.top - margin.bottom;
+                
+                // Create SVG
+                const svg = d3.select('#chart-b')
+                    .attr('width', width + margin.left + margin.right)
+                    .attr('height', height + margin.top + margin.bottom)
+                    .append('g')
+                    .attr('transform', `translate(${margin.left},${margin.top})`);
+                
+                // Create scales
+                const xScale = d3.scaleLinear()
+                    .domain(d3.extent(data, d => d.year))
+                    .range([0, width])
+                    .nice();
+                    
+                const yScale = d3.scaleLinear()
+                    .domain([-1, 1])  // Standard range for emotion metrics
+                    .range([height, 0])
+                    .nice();
+                
+                // Create axes
+                const xAxis = d3.axisBottom(xScale)
+                    .ticks(Math.min(10, data.length))
+                    .tickFormat(d3.format("d"));  // Format as integers (years)
+                    
+                const yAxis = d3.axisLeft(yScale);
+                
+                // Add X axis
+                svg.append('g')
+                    .attr('class', 'axis x-axis')
+                    .attr('transform', `translate(0,${height})`)
+                    .call(xAxis);
+                    
+                // Add X axis label
+                svg.append('text')
+                    .attr('class', 'axis-title')
+                    .attr('text-anchor', 'middle')
+                    .attr('x', width / 2)
+                    .attr('y', height + 45)
+                    .text('Publication Year');
+                
+                // Add Y axis
+                svg.append('g')
+                    .attr('class', 'axis y-axis')
+                    .call(yAxis);
+                    
+                // Add Y axis label
+                svg.append('text')
+                    .attr('class', 'axis-title')
+                    .attr('text-anchor', 'middle')
+                    .attr('transform', 'rotate(-90)')
+                    .attr('x', -height / 2)
+                    .attr('y', -45)
+                    .text(emotionDisplay);
+                
+                // Add title
+                svg.append('text')
+                    .attr('class', 'chart-title')
+                    .attr('text-anchor', 'middle')
+                    .attr('x', width / 2)
+                    .attr('y', -15)
+                    .style('font-size', '16px')
+                    .style('font-weight', '500')
+                    .text(`${language.charAt(0).toUpperCase() + language.slice(1)}: ${emotionDisplay} (slope: ${slope.toFixed(5)})`);
+                
+                // Create line generator for regression line
+                const regressionLine = d3.line()
+                    .x(d => xScale(d.year))
+                    .y(d => yScale(d.predicted));
+                
+                // Create tooltip for this visualization
+                const tooltipB = d3.select('.module-b')
+                    .append('div')
+                    .attr('class', 'tooltip')
+                    .style('opacity', 0);
+                
+                // Prepare animation - Create a clip path rectangle that will animate
+                svg.append('defs')
+                    .append('clipPath')
+                    .attr('id', 'clip-b')
+                    .append('rect')
+                    .attr('width', 0)
+                    .attr('height', height);
+                    
+                // Create a container for all animated elements with the clip path
+                const animatedGroup = svg.append('g')
+                    .attr('clip-path', 'url(#clip-b)');
+                
+                // Add regression line path to animated group
+                const path = animatedGroup.append('path')
+                    .datum(data)
+                    .attr('class', 'regression-line')
+                    .attr('d', regressionLine);
+                
+                // Add dots to animated group
+                const dots = animatedGroup.selectAll('.dot')
+                    .data(data)
+                    .enter()
+                    .append('circle')
+                    .attr('class', 'dot')
+                    .attr('cx', d => xScale(d.year))
+                    .attr('cy', d => yScale(d.value))
+                    .attr('r', d => Math.max(3, Math.min(8, Math.sqrt(d.count)))) // Size based on count
+                    .attr('fill', 'steelblue')
+                    .attr('opacity', 0.7)
+                    .on('mouseover', function(event, d) {
+                        d3.select(this)
+                            .attr('opacity', 1)
+                            .attr('stroke-width', 2);
+                            
+                        tooltipB.transition()
+                            .duration(200)
+                            .style('opacity', 0.9);
+                            
+                        tooltipB.html(`
+                            <div class="tooltip-title">${d.year}</div>
+                            <div class="tooltip-value">Value: ${d.value.toFixed(3)}</div>
+                            <div class="tooltip-value">Songs: ${d.count}</div>
+                            <div class="tooltip-value">Trend: ${d.predicted.toFixed(3)}</div>
+                        `)
+                        .style('left', (event.pageX + 10) + 'px')
+                        .style('top', (event.pageY - 28) + 'px');
+                    })
+                    .on('mouseout', function() {
+                        d3.select(this)
+                            .attr('opacity', 0.7)
+                            .attr('stroke-width', 1);
+                            
+                        tooltipB.transition()
+                            .duration(500)
+                            .style('opacity', 0);
+                    });
+                
+                // Animate the clip path to reveal the chart from left to right
+                d3.select('#clip-b rect')
+                    .transition()
+                    .duration(1500)
+                    .attr('width', width);
+                    
+                // Draw reference line at y=0
+                svg.append('line')
+                    .attr('x1', 0)
+                    .attr('y1', yScale(0))
+                    .attr('x2', width)
+                    .attr('y2', yScale(0))
+                    .attr('stroke', '#ccc')
+                    .attr('stroke-width', 1)
+                    .attr('stroke-dasharray', '4,4');
+            }
+        })();
+
+        // ===========================
+        // MODULE D: KMeans Cluster to Episode - Sankey Diagram
+        // ===========================
+        (function() {
+            // Data
+            const data = {
+                "nodes": [
+                    { "name": "Cluster 0" }, { "name": "Cluster 1" },
+                    { "name": "Cluster 2" }, { "name": "Cluster 3" },
+                    { "name": "Cluster 4" }, { "name": "Cluster 5" },
+                    { "name": "Cluster 6" }, { "name": "Cluster 7" },
+                    { "name": "Cluster 8" }, { "name": "Cluster 9" },
+                    { "name": "EDR" }, { "name": "CB" },
+                    { "name": "PEP" }, { "name": "Unclassified" }
+                ],
+                "links": [
+                    { "source": 0, "target": 10, "value": 0.1819 },
+                    { "source": 1, "target": 11, "value": 0.1434 },
+                    { "source": 1, "target": 10, "value": 0.0137 },
+                    { "source": 2, "target": 10, "value": 0.1496 },
+                    { "source": 3, "target": 12, "value": 0.0135 },
+                    { "source": 4, "target": 11, "value": 0.0411 },
+                    { "source": 5, "target": 10, "value": 0.0681 },
+                    { "source": 5, "target": 13, "value": 0.0232 },
+                    { "source": 6, "target": 11, "value": 0.0362 },
+                    { "source": 7, "target": 10, "value": 0.0244 },
+                    { "source": 8, "target": 11, "value": 0.1229 },
+                    { "source": 8, "target": 10, "value": 0.0196 },
+                    { "source": 8, "target": 13, "value": 0.0212 },
+                    { "source": 9, "target": 11, "value": 0.0293 },
+                    { "source": 9, "target": 10, "value": 0.0686 }
+                ]
+            };
+
+            // Enhanced color palette that's visually appealing
+            const leftNodeColors = [
+                "#5D69B1", "#52BCA3", "#99C945", "#CC61B0", 
+                "#24796C", "#DAA51B", "#2F8AC4", "#764E9F", 
+                "#ED645A", "#CC3A8E"
+            ];
+            
+            const rightNodeColors = {
+                "EDR": "#3182BD",
+                "CB": "#E6550D", 
+                "PEP": "#31A354",
+                "Unclassified": "#756BB1"
+            };
+
+            // Get SVG dimensions
+            const svg = d3.select("#sankey");
+            const width = +svg.attr("width");
+            const height = +svg.attr("height");
+            const margin = {top: 10, right: 10, bottom: 10, left: 10};
+            const innerWidth = width - margin.left - margin.right;
+            const innerHeight = height - margin.top - margin.bottom;
+
+            // Create sankey generator
+            const sankey = d3.sankey()
+                .nodeWidth(25)
+                .nodePadding(15)
+                .extent([[margin.left, margin.top], [innerWidth, innerHeight]]);
+
+            // Compute the sankey layout
+            const { nodes, links } = sankey(data);
+
+            // Create the sankey diagram container
+            const chart = svg.append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Create tooltip
+            const tooltip = d3.select("#tooltip-d");
+
+            // Format number for display
+            const formatNumber = d3.format(",.4f");
+            const formatPercent = d3.format(".1%");
+
+            // Generate gradient IDs for each link
+            links.forEach((link, i) => {
+                link.id = `link-${i}`;
+                // Calculate the percentage of the total for each link
+                link.percent = link.value / d3.sum(links, d => d.value);
+            });
+
+            // Add the gradients definitions
+            const defs = svg.append("defs");
+            
+            links.forEach(link => {
+                const gradient = defs.append("linearGradient")
+                    .attr("id", link.id)
+                    .attr("gradientUnits", "userSpaceOnUse")
+                    .attr("x1", link.source.x1)
+                    .attr("x2", link.target.x0);
+                    
+                const sourceColor = link.source.index < 10 ? 
+                    leftNodeColors[link.source.index] : 
+                    rightNodeColors[link.source.name];
+                    
+                const targetColor = link.target.index >= 10 ? 
+                    rightNodeColors[link.target.name] : 
+                    leftNodeColors[link.target.index];
+                
+                gradient.append("stop")
+                    .attr("offset", "0%")
+                    .attr("stop-color", sourceColor);
+                    
+                gradient.append("stop")
+                    .attr("offset", "100%")
+                    .attr("stop-color", targetColor);
+            });
+
+            // Add links
+            chart.append("g")
+                .selectAll(".link")
+                .data(links)
+                .join("path")
+                .attr("class", "link")
+                .attr("d", d3.sankeyLinkHorizontal())
+                .attr("stroke", d => `url(#${d.id})`)
+                .attr("stroke-width", d => Math.max(1, d.width))
+                .style("stroke-opacity", 0.4)
+                .on("mouseover", function(event, d) {
+                    // Highlight the path
+                    d3.select(this)
+                        .style("stroke-opacity", 0.8)
+                        .style("cursor", "pointer");
+                        
+                    // Show tooltip
+                    tooltip
+                        .style("opacity", 1)
+                        .html(`
+                            <div class="tooltip-title">${d.source.name} → ${d.target.name}</div>
+                            <div class="tooltip-value">Value: ${formatNumber(d.value)}</div>
+                            <div class="tooltip-value">Percentage: ${formatPercent(d.percent)}</div>
+                        `)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mousemove", function(event) {
+                    tooltip
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", function() {
+                    d3.select(this).style("stroke-opacity", 0.4);
+                    tooltip.style("opacity", 0);
+                });
+
+            // Add nodes
+            const node = chart.append("g")
+                .selectAll(".node")
+                .data(nodes)
+                .join("g")
+                .attr("class", "node")
+                .attr("transform", d => `translate(${d.x0},${d.y0})`);
+
+            // Add rectangle for nodes
+            node.append("rect")
+                .attr("height", d => d.y1 - d.y0)
+                .attr("width", d => d.x1 - d.x0)
+                .attr("fill", d => {
+                    if (d.index < 10) {
+                        return leftNodeColors[d.index];
+                    } else {
+                        return rightNodeColors[d.name];
+                    }
+                })
+                .on("mouseover", function(event, d) {
+                    // Get all connected links
+                    const linkedByIndex = {};
+                    links.forEach(link => {
+                        linkedByIndex[`${link.source.index},${link.target.index}`] = true;
+                    });
+                    
+                    // Highlight the current node
+                    d3.select(this)
+                        .style("stroke", "#000")
+                        .style("stroke-width", "2px");
+                        
+                    // Highlight connected links
+                    chart.selectAll(".link")
+                        .style("stroke-opacity", link => {
+                            return link.source.index === d.index || link.target.index === d.index ? 0.8 : 0.1;
+                        })
+                        .style("stroke-width", link => {
+                            return link.source.index === d.index || link.target.index === d.index ? 
+                                Math.max(3, link.width) : Math.max(1, link.width);
+                        });
+                        
+                    // Calculate total incoming and outgoing values
+                    const incoming = links.filter(l => l.target.index === d.index)
+                        .reduce((sum, l) => sum + l.value, 0);
+                        
+                    const outgoing = links.filter(l => l.source.index === d.index)
+                        .reduce((sum, l) => sum + l.value, 0);
+                    
+                    // Show tooltip with node details
+                    tooltip
+                        .style("opacity", 1)
+                        .html(`
+                            <div class="tooltip-title">${d.name}</div>
+                            <div class="tooltip-value">Incoming: ${formatNumber(incoming)}</div>
+                            <div class="tooltip-value">Outgoing: ${formatNumber(outgoing)}</div>
+                            <div class="tooltip-value">Total: ${formatNumber(d.value)}</div>
+                        `)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mousemove", function(event) {
+                    tooltip
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", function() {
+                    // Reset highlights
+                    d3.select(this)
+                        .style("stroke", "#fff")
+                        .style("stroke-width", "1px");
+                        
+                    chart.selectAll(".link")
+                        .style("stroke-opacity", 0.4)
+                        .style("stroke-width", d => Math.max(1, d.width));
+                        
+                    tooltip.style("opacity", 0);
+                });
+
+            // Add node labels
+            node.append("text")
+                .attr("x", d => d.x0 < width / 2 ? d.x1 - d.x0 + 6 : -6)
+                .attr("y", d => (d.y1 - d.y0) / 2)
+                .attr("dy", "0.35em")
+                .attr("text-anchor", d => d.x0 < width / 2 ? "start" : "end")
+                .text(d => d.name)
+                .each(function(d) {
+                    // Check if this is an "episode" node (right side)
+                    const isEpisode = d.index >= 10;
+                    
+                    // Make episode node labels bold
+                    if (isEpisode) {
+                        d3.select(this)
+                            .style("font-weight", "bold")
+                            .style("font-size", "14px");
+                    }
+                });
+                
+            // Add value labels to node rectangles
+            node.filter(d => (d.y1 - d.y0) > 30) // Only add to nodes with enough height
+                .append("text")
+                .attr("x", d => (d.x1 - d.x0) / 2)
+                .attr("y", d => (d.y1 - d.y0) / 2)
+                .attr("dy", "0.35em")
+                .attr("text-anchor", "middle")
+                .attr("fill", "#fff")
+                .style("pointer-events", "none")
+                .style("font-size", "11px")
+                .style("font-weight", "bold")
+                .text(d => formatNumber(d.value))
+                .filter(d => ((d.x1 - d.x0) < 50) || ((d.y1 - d.y0) < 40))
+                .remove(); // Remove if too small
+        })();
+
+        // Handle global window resize
+        window.addEventListener("resize", function() {
+            // Debounce the resize event to prevent excessive redraws
+            clearTimeout(window.globalResizeTimer);
+            window.globalResizeTimer = setTimeout(() => {
+                // Reload the page to refresh all visualizations
+                // This is a simple but effective approach for complex multi-chart pages
+                location.reload();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
