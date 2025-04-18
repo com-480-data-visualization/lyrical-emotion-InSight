@@ -4,718 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cross‑Cultural Dynamics of Emotional Expression in Lyrics</title>
+    
+    <!-- D3 and Sankey -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-sankey/0.12.3/d3-sankey.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>
-/* ---- Main nav + Hero styles ---- */
-    .main-nav {
-        position: fixed; top: 0; width: 100%; z-index: 200;
-        background: rgba(25,25,25,0.7);
-        backdrop-filter: blur(8px);
-    }
-    .nav-container {
-        max-width: 1200px; margin: 0 auto;
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 10px 20px;
-    }
-    .main-nav .logo {
-        color: #fff; font-size: 1.4rem; font-weight: 600;
-    }
-    .main-nav nav a {
-        color: rgba(255,255,255,0.8);
-        margin-left: 20px; text-decoration: none; font-weight: 500;
-        transition: color 0.3s;
-    }
-    .main-nav nav a:hover,
-    .main-nav nav a.active {
-        color: #ffd54f;
-    }
     
-    .hero {
-        height: 100vh; display: flex; align-items: center; justify-content: center;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: #fff; text-align: center; padding: 0 20px;
-    }
-    .hero-content h1 {
-        font-size: 3rem; margin-bottom: 0.5rem; text-shadow: 0 2px 8px rgba(0,0,0,0.4);
-    }
-    .hero-content p {
-        font-size: 1.25rem; margin-bottom: 1.5rem; opacity: 0.9;
-    }
-    .hero-content button {
-        background: #fff; color: #764ba2; border: none;
-        padding: 0.8rem 2rem; font-size: 1rem; border-radius: 30px;
-        cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .hero-content button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0,0,0,0.3);
-    }
-  /* To prevent hero from hiding under fixed nav */
-  body { scroll-padding-top: 60px; }
-        /* Common Styles */
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        .section {
-            max-width: 1200px;
-            margin: 40px auto;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        
-        .section-intro {
-            padding: 20px 30px;
-            background-color: #f9f9f9;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .visualization-container {
-            padding: 20px;
-        }
-        
-        h1 {
-            font-size: 32px;
-            color: #333;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        
-        h2 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            color: #444;
-        }
-        
-        h3 {
-            font-size: 22px;
-            color: #555;
-            margin-bottom: 15px;
-        }
-        
-        p {
-            font-size: 16px;
-            line-height: 1.7;
-            color: #666;
-            margin-bottom: 20px;
-        }
-        
-        .page-title {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .page-title h1 {
-            color: white;
-            margin: 0;
-        }
-        
-        .page-title p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 18px;
-            max-width: 800px;
-            margin: 15px auto 0;
-        }
-        
-        .footer {
-            text-align: center;
-            padding: 30px 0;
-            margin-top: 60px;
-            background-color: #f9f9f9;
-            color: #777;
-        }
-        
-        /* Tooltip shared style */
-        .tooltip {
-            position: absolute;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            pointer-events: none;
-            font-size: 14px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-            z-index: 100;
-            opacity: 0;
-        }
-        
-        /* Individual module styles preserved below */
-        
-        /* A: Lyrics Change Chart */
-        .module-a .container {
-            max-width: 900px;
-            margin: 0 auto;
-            position: relative;
-        }
-        .module-a .header {
-            background-color: #f8d7e3;
-            padding: 20px;
-            border-radius: 10px 10px 0 0;
-        }
-        .module-a .chart-area {
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 0 0 10px 10px;
-            position: relative;
-            overflow: hidden;
-        }
-        .module-a h1 {
-            margin: 0;
-            font-size: 28px;
-            color: #333;
-        }
-        .module-a .replay-btn {
-            padding: 5px 15px;
-            border: 1px solid #333;
-            background: white;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-            font-size: 14px;
-        }
-        .module-a .axis text {
-            fill: #666;
-            font-size: 12px;
-        }
-        .module-a .line {
-            fill: none;
-            stroke-width: 3;
-        }
-        .module-a .dot {
-            stroke-width: 2;
-        }
-        .module-a .line-label {
-            font-size: 12px;
-        }
-        .module-a .decade-label {
-            font-size: 14px;
-            fill: #666;
-            text-anchor: middle;
-        }
-        .module-a .music-notes {
-            position: absolute;
-            right: 40px;
-            top: 30px;
-        }
-        .module-a .footer {
-            font-size: 12px;
-            text-align: right;
-            margin-top: 5px;
-            color: #888;
-        }
-        .module-a .loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 18px;
-            color: #666;
-        }
-        
-        /* C: Emotion Trends Across Languages */
-        .module-c .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        .module-c .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 30px;
-            border-radius: 10px 10px 0 0;
-        }
-        .module-c .chart-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 30px;
-            background-color: #f5f7fa;
-            border-bottom: 1px solid #e9ecef;
-        }
-        .module-c .control-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .module-c .chart-area {
-            padding: 20px 30px 30px;
-            position: relative;
-        }
-        .module-c h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 500;
-        }
-        .module-c h2 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 400;
-            opacity: 0.9;
-            margin-top: 5px;
-        }
-        .module-c select {
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: white;
-            font-size: 14px;
-            min-width: 150px;
-            cursor: pointer;
-        }
-        .module-c .tooltip {
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-        }
-        .module-c .axis-label {
-            font-size: 14px;
-            fill: #555;
-        }
-        .module-c .loading {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 16px;
-            color: #666;
-        }
-        .module-c .footer {
-            padding: 15px 30px;
-            text-align: center;
-            font-size: 13px;
-            color: #888;
-            background-color: #f5f7fa;
-            border-top: 1px solid #e9ecef;
-        }
-        .module-c .gradient-bar {
-            transition: fill 0.5s ease;
-        }
-        .module-c .y-line {
-            stroke: #ddd;
-            stroke-dasharray: 3,3;
-        }
-        
-        /* E: Valence & Arousal Relationship */
-        .module-e .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            padding: 25px;
-        }
-        .module-e h1 {
-            color: #444;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 28px;
-        }
-        .module-e h2 {
-            color: #555;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 10px;
-            margin-top: 30px;
-            margin-bottom: 20px;
-            font-size: 22px;
-        }
-        .module-e .chart-container {
-            margin-bottom: 40px;
-        }
-        .module-e .tooltip h4 {
-            margin: 0 0 5px 0;
-            font-size: 14px;
-            color: #444;
-        }
-        .module-e .tooltip p {
-            margin: 0;
-            line-height: 1.4;
-        }
-        .module-e .selector-container {
-            display: flex;
-            align-items: center;
-            margin: 20px 0;
-            padding: 10px;
-            background-color: #f5f5f5;
-            border-radius: 5px;
-        }
-        .module-e label {
-            margin-right: 10px;
-            font-weight: 500;
-        }
-        .module-e select {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: white;
-            font-size: 14px;
-            cursor: pointer;
-            min-width: 140px;
-        }
-        .module-e .dot {
-            cursor: pointer;
-            transition: r 0.2s, opacity 0.2s;
-        }
-        .module-e .dot:hover {
-            stroke: #555;
-            stroke-width: 1.5;
-        }
-        .module-e .bar {
-            transition: opacity 0.3s;
-        }
-        .module-e .bar:hover {
-            opacity: 0.8;
-        }
-        .module-e .axis text {
-            font-size: 11px;
-            fill: #666;
-        }
-        .module-e .axis-label {
-            font-weight: 500;
-            font-size: 12px;
-            fill: #555;
-        }
-        .module-e .grid line {
-            stroke: #e0e0e0;
-            stroke-opacity: 0.7;
-            shape-rendering: crispEdges;
-        }
-        .module-e .legend-item {
-            cursor: pointer;
-            font-size: 12px;
-        }
-        .module-e .bar-label {
-            font-size: 9px;
-            fill: #333;
-            font-weight: 500;
-        }
-        .module-e .footer {
-            font-size: 12px;
-            text-align: right;
-            margin-top: 20px;
-            color: #888;
-        }
-        
-        /* B: Lyrical Emotion Trends by Language */
-        .module-b {
-            --primary-color: #e9b0c5;
-            --secondary-color: #f8d7e3;
-            --accent-color: #e74c3c;
-            --text-color: #333;
-            --light-gray: #f5f5f5;
-            --medium-gray: #ddd;
-            --dark-gray: #777;
-            --chart-bg: #f9f9f9;
-            --tooltip-bg: rgba(255, 255, 255, 0.9);
-        }
-        .module-b .container {
-            max-width: 1000px;
-            margin: 2rem auto;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        .module-b header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 1.5rem 2rem;
-            position: relative;
-        }
-        .module-b h1 {
-            margin: 0;
-            font-size: 1.8rem;
-            font-weight: 500;
-        }
-        .module-b .subtitle {
-            margin-top: 0.5rem;
-            font-weight: 300;
-            opacity: 0.9;
-        }
-        .module-b .controls {
-            background-color: white;
-            padding: 1.5rem 2rem;
-            display: flex;
-            gap: 1.5rem;
-            border-bottom: 1px solid var(--medium-gray);
-        }
-        .module-b .control-group {
-            flex: 1;
-        }
-        .module-b label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--dark-gray);
-        }
-        .module-b select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--medium-gray);
-            border-radius: 4px;
-            font-size: 1rem;
-            appearance: none;
-            background-image: url("data:image/svg+xml;utf8,<svg fill='%23777' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-            background-repeat: no-repeat;
-            background-position: right 0.5rem center;
-            background-size: 1.5rem;
-        }
-        .module-b select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
-        }
-        .module-b .chart-container {
-            padding: 1.5rem 2rem;
-        }
-        .module-b #chart {
-            width: 100%;
-            height: 500px;
-            background-color: var(--chart-bg);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .module-b .axis path,
-        .module-b .axis line {
-            stroke: var(--medium-gray);
-        }
-        .module-b .axis text {
-            fill: var(--dark-gray);
-            font-size: 12px;
-        }
-        .module-b .axis-title {
-            fill: var(--dark-gray);
-            font-size: 14px;
-            font-weight: 500;
-        }
-        .module-b .dot {
-            stroke: white;
-            stroke-width: 1;
-        }
-        .module-b .regression-line {
-            fill: none;
-            stroke: var(--accent-color);
-            stroke-width: 2;
-            stroke-dasharray: 4, 2;
-        }
-        .module-b .tooltip {
-            position: absolute;
-            padding: 0.75rem;
-            background-color: var(--tooltip-bg);
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            pointer-events: none;
-            font-size: 0.9rem;
-            z-index: 10;
-            max-width: 200px;
-        }
-        .module-b .tooltip-title {
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-            border-bottom: 1px solid var(--medium-gray);
-            padding-bottom: 0.25rem;
-        }
-        .module-b .tooltip-value {
-            margin: 0.25rem 0;
-        }
-        .module-b .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 500px;
-            font-size: 1.25rem;
-            color: var(--dark-gray);
-        }
-        .module-b .loading span {
-            margin-right: 1rem;
-        }
-        .module-b .loading-spinner {
-            width: 24px;
-            height: 24px;
-            border: 3px solid var(--medium-gray);
-            border-top-color: var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        .module-b .no-data {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 500px;
-            color: var(--dark-gray);
-            text-align: center;
-            padding: 0 2rem;
-        }
-        .module-b .no-data-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .module-b .footer {
-            padding: 1rem 2rem;
-            border-top: 1px solid var(--medium-gray);
-            font-size: 0.9rem;
-            color: var(--dark-gray);
-            text-align: center;
-        }
-        @media (max-width: 768px) {
-            .module-b .controls {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            .module-b .chart-container {
-                padding: 1rem;
-            }
-            .module-b #chart {
-                height: 400px;
-            }
-        }
-        
-        /* D: KMeans Cluster to Episode - Sankey Diagram */
-        .module-d .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        .module-d .header {
-            background-color: #f8d7e3;
-            padding: 20px;
-            border-radius: 10px 10px 0 0;
-        }
-        .module-d .title {
-            font-size: 24px;
-            font-weight: 600;
-            color: #333;
-            margin: 0;
-            text-align: center;
-        }
-        .module-d .chart-area {
-            padding: 20px;
-        }
-        .module-d svg {
-            display: block;
-            margin: 0 auto;
-        }
-        .module-d .node rect {
-            fill-opacity: 0.9;
-            stroke: #fff;
-            stroke-width: 1px;
-            transition: all 0.3s;
-        }
-        .module-d .node rect:hover {
-            stroke: #333;
-            stroke-width: 2px;
-            cursor: pointer;
-        }
-        .module-d .node text {
-            font-size: 13px;
-            font-weight: 500;
-            pointer-events: none;
-            fill: #333;
-        }
-        .module-d .link {
-            fill: none;
-            stroke-opacity: 0.4;
-            transition: all 0.3s;
-        }
-        .module-d .link:hover {
-            stroke-opacity: 0.8;
-        }
-        .module-d .highlight {
-            stroke-opacity: 0.8;
-        }
-        .module-d .tooltip {
-            position: absolute;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 5px;
-            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-            pointer-events: none;
-            font-size: 14px;
-            z-index: 10;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .module-d .tooltip-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #eee;
-        }
-        .module-d .tooltip-value {
-            color: #666;
-        }
-        .module-d .footer {
-            font-size: 12px;
-            text-align: right;
-            padding: 10px 20px;
-            color: #888;
-            border-top: 1px solid #eee;
-        }
-    </style>
-</head>
+    <!-- Roboto font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- External stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+    </head>
 <body>
-<!-- Add this just inside <body>, before your existing .page-title and modules -->
-    <header class="main-nav">
-        <div class="nav-container">
-          <div class="logo">🎵 LyricEmotion</div>
-          <nav>
-            <a href="#hero" class="active">Home</a>
-            <a href="#module-a">Evolution</a>
-            <a href="#module-c">Cross‑Language</a>
-            <a href="#module-e">Valence/Arousal</a>
-            <a href="#module-b">By Language</a>
-            <a href="#module-d">Clustering</a>
-          </nav>
-        </div>
-      </header>
-      
-      <section id="hero" class="hero">
-        <div class="hero-content">
-          <h1>Cross‑Cultural Dynamics of Emotional Expression in Lyrics</h1>
-          <p>Explore how music bridges emotions across languages and time.</p>
-          <button onclick="document.querySelector('#module-a').scrollIntoView({ behavior: 'smooth' })">
-            Dive In ↓
-          </button>
-        </div>
-      </section>    
     <div class="page-title">
         <h1>Cross‑Cultural Dynamics of Emotional Expression in Lyrics</h1>
-        <p>an interactive exploration of how lyrics express emotions across languages and time.</p>
+        <p>an interactive exploration of how lyrics express emotions across languages and time</p>
     </div>
 
     <!-- MODULE A: How lyrics have changed through the decades -->
     <div class="section">
         <div class="section-intro">
-            <h2>Historical Evolution of Lyrical Content</h2>
-            <p>This visualization shows how key elements in song lyrics have evolved over the decades, highlighting changing patterns in sentiment, vocabulary, and thematic focus. The multi-line chart tracks several important metrics over time, revealing interesting cultural and linguistic shifts in popular music.</p>
+            <h2>Historical Trends in Lyrical Tone (1950s–2010s)</h2>
+            <p>Percentage use of emotional and thematic word categories—negative sentiment, positive sentiment, neutral language, money, sex, and swear words—showing how lyrical tone has shifted across decades.</p>
         </div>
         
         <div class="visualization-container module-a">
             <div class="container">
                 <div class="header">
-                    <h1>How lyrics have changed through the decades</h1>
+                    <h1>Trends of Lyrical Tone </h1>
                     <button class="replay-btn" id="replay">Replay</button>
                     <svg class="music-notes" width="120" height="60">
                         <!-- Music notes will be added with D3 -->
@@ -725,9 +41,9 @@
                     <svg id="chart-a" width="100%" height="400"></svg>
                     <div id="loading-a" class="loading">Loading data...</div>
                 </div>
-                <div class="footer">
+                <!-- <div class="footer">
                     ✶ A Flourish chart
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -735,15 +51,14 @@
     <!-- MODULE C: Valence Trends Across Languages -->
     <div class="section">
         <div class="section-intro">
-            <h2>Emotional Trends Across Language Barriers</h2>
-            <p>How do different languages express emotional content in their lyrics? This analysis compares valence (positivity), arousal (energy), and dominance across multiple language groups, showcasing distinct cultural patterns in musical expression. The visualization allows for exploration of both time-based trends and average emotional values.</p>
+            <h2>Emotional Dimensions and Trends in Lyrics by Language</h2>
+            <p>Each language’s average valence (positivity), arousal (energy), and dominance (sense of control) as measured in song lyrics, alongside the regression coefficient of each emotion dimension over time. The trend coefficient is obtained via a linear regression of the yearly emotion scores, indicating the average annual increase or decrease in that emotional attribute.</p>
         </div>
         
         <div class="visualization-container module-c">
             <div class="container">
                 <div class="header">
-                    <h1>Emotion Trends Across Languages</h1>
-                    <h2>Exploring how different languages express emotions over time</h2>
+                    <h1>Emotional Profiles & Trends by Language</h1>
                 </div>
                 <div class="chart-controls">
                     <div class="control-group">
@@ -756,9 +71,9 @@
                     <div class="control-group">
                         <label for="emotionType">Emotion Dimension:</label>
                         <select id="emotionType">
-                            <option value="valence">Valence (Positivity)</option>
-                            <option value="arousal">Arousal (Energy)</option>
-                            <option value="dominance">Dominance (Control)</option>
+                            <option value="valence">Valence</option>
+                            <option value="arousal">Arousal</option>
+                            <option value="dominance">Dominance</option>
                         </select>
                     </div>
                 </div>
@@ -766,9 +81,9 @@
                     <div id="loading-c" class="loading">Loading visualization...</div>
                     <svg id="chart-c" width="100%" height="600"></svg>
                 </div>
-                <div class="footer">
+                <!-- <div class="footer">
                     Data visualization created with D3.js | Source: Global Lyrics Database
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -776,16 +91,14 @@
     <!-- MODULE E: Valence & Arousal Relationship Across Languages -->
     <div class="section">
         <div class="section-intro">
-            <h2>The Emotional Fingerprint of Languages</h2>
-            <p>Different languages have distinctive emotional signatures in their musical expressions. This two-part visualization examines the relationship between valence (positivity) and arousal (energy/intensity) across various languages, revealing fascinating cultural differences in how emotions are communicated through lyrics.</p>
+            <h2>Valence–Arousal Profiles of Song Lyrics Across Languages</h2>
+            <p>Each point represents a language’s average valence (positivity) and arousal (energy/intensity) scores, placing languages in a two‑dimensional emotional space for cross‑cultural comparison.</p>
         </div>
         
         <div class="visualization-container module-e">
             <div class="container">
-                <h1>Emotions Across Languages</h1>
-                
+
                 <div class="chart-container">
-                    <h2>Valence & Arousal Relationship Across Languages</h2>
                     <div id="scatter-plot"></div>
                 </div>
                 
@@ -802,9 +115,9 @@
                     <div id="bar-chart"></div>
                 </div>
                 
-                <div class="footer">
+                <!-- <div class="footer">
                     ✶ Data visualization powered by D3.js
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -812,16 +125,16 @@
     <!-- MODULE B: Lyrical Emotion Trends by Language -->
     <div class="section">
         <div class="section-intro">
-            <h2>Temporal Emotion Evolution Within Languages</h2>
-            <p>This visualization allows for an in-depth look at how emotional expression has evolved over time within specific languages. By selecting a language and an emotional dimension, you can observe detailed trends in how that linguistic community has expressed emotions through music across decades, revealing cultural shifts and adaptations.</p>
+            <h2>Temporal Emotion Trends Within Languages</h2>
+            <p>This visualization allows for an in-depth look at how emotional expression has evolved over time within specific languages. By selecting a language and an emotional dimension, you can observe detailed trends in how that linguistic community has expressed emotions through music across decades.</p>
         </div>
         
         <div class="visualization-container module-b">
             <div class="container">
-                <header>
+                <!-- <header>
                     <h1>Lyrical Emotion Trends by Language</h1>
-                    <div class="subtitle">Explore how emotions in lyrics have changed over time across different languages</div>
-                </header>
+                    <div class="subtitle">Explore how emotions in lyrics have changed over time for each language</div>
+                </header> -->
                 
                 <div class="controls">
                     <div class="control-group">
@@ -848,9 +161,9 @@
                     </div>
                 </div>
                 
-                <div class="footer">
+                <!-- <div class="footer">
                     Data source: Lyrical emotion trends dataset | Visualization created with D3.js
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -858,21 +171,21 @@
     <!-- MODULE D: KMeans Cluster to Episode - Sankey Diagram -->
     <div class="section">
         <div class="section-intro">
-            <h2>Clustering Analysis: From Mathematical Patterns to Emotional Episodes</h2>
-            <p>This Sankey diagram presents a fascinating bridge between computational analysis and emotional categorization. Using K-means clustering on lyrical data, we've identified patterns that map to emotional episodes (EDR, CB, PEP). The diagram displays how mathematical clusters correspond to recognizable emotional states, helping us understand the underlying structure of lyrical expression.</p>
+            <h2>Clustering Analysis: Mapping Structural Patterns to Emotional Episodes</h2>
+            <p>This Sankey diagram presents a fascinating bridge between lyrics structure and emotion. Using K-means clustering on lyrical structures, we identify patterns that map to emotional episodes (EDR, CB, PEP). The diagram displays how structure clusters correspond to recognizable emotional states.</p>
         </div>
         
         <div class="visualization-container module-d">
             <div class="container">
-                <div class="header">
+                <!-- <div class="header">
                     <h1 class="title">KMeans Cluster to Episode - Sankey Diagram</h1>
-                </div>
+                </div> -->
                 <div class="chart-area">
                     <svg id="sankey" width="960" height="530"></svg>
                 </div>
-                <div class="footer">
+                <!-- <div class="footer">
                     Data visualization by D3.js
-                </div>
+                </div> -->
             </div>
             
             <div class="tooltip" id="tooltip-d"></div>
@@ -881,7 +194,7 @@
 
     <div class="footer">
         <p>© 2025 Lyrical Emotion Analysis Project</p>
-        <p>All visualizations created with D3.js | Data sources: Global Lyrics Database</p>
+        <p>All visualizations created with D3.js | Data sources: WASABI Dataset</p>
     </div>
 
     <script>
@@ -1036,14 +349,6 @@
                     .attr("transform", `translate(0,${height})`)
                     .call(d3.axisBottom(xScale).tickSize(0));
                     
-                // Add Decade label
-                chartGroup.append("text")
-                    .attr("x", width / 2)
-                    .attr("y", -10)
-                    .attr("text-anchor", "middle")
-                    .attr("fill", "#333")
-                    .style("font-size", "16px")
-                    .text("Decade");
                 
                 // Define categories with colors
                 const categories = [
