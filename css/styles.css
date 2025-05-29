@@ -1,0 +1,1112 @@
+/* Common Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.section {
+    max-width: 1200px;
+    margin: 40px auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.section-intro {
+    padding: 20px 30px;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.visualization-container {
+    padding: 20px;
+}
+
+h1 {
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #444;
+}
+
+h3 {
+    font-size: 22px;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.page-title {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-title h1 {
+    color: white;
+    margin: 0;
+}
+
+.page-title p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 18px;
+    max-width: 800px;
+    margin: 15px auto 0;
+}
+
+.footer {
+    text-align: center;
+    padding: 30px 0;
+    margin-top: 60px;
+    background-color: #f9f9f9;
+    color: #777;
+}
+
+/* Tooltip shared style */
+.tooltip {
+    position: absolute;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    pointer-events: none;
+    font-size: 14px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    opacity: 0;
+}
+
+/* Individual module styles preserved below */
+
+/* A: Lyrics Change Chart */
+.module-a .container {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+}
+.module-a .header {
+    background-color: #f8d7e3;
+    padding: 20px;
+    border-radius: 10px 10px 0 0;
+}
+.module-a .chart-area {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 0 0 10px 10px;
+    position: relative;
+    overflow: hidden;
+}
+.module-a h1 {
+    margin: 0;
+    font-size: 28px;
+    color: #333;
+}
+.module-a .replay-btn {
+    padding: 5px 15px;
+    border: 1px solid #333;
+    background: white;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 14px;
+}
+.module-a .axis text {
+    fill: #666;
+    font-size: 12px;
+}
+.module-a .line {
+    fill: none;
+    stroke-width: 3;
+}
+.module-a .dot {
+    stroke-width: 2;
+}
+.module-a .line-label {
+    font-size: 12px;
+}
+.module-a .decade-label {
+    font-size: 14px;
+    fill: #666;
+    text-anchor: middle;
+}
+.module-a .music-notes {
+    position: absolute;
+    right: 40px;
+    top: 30px;
+}
+.module-a .footer {
+    font-size: 12px;
+    text-align: right;
+    margin-top: 5px;
+    color: #888;
+}
+.module-a .loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    color: #666;
+}
+
+/* C: Emotion Trends Across Languages */
+.module-c .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+.module-c .header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 10px 10px 0 0;
+}
+.module-c .chart-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #f5f7fa;
+    border-bottom: 1px solid #e9ecef;
+}
+.module-c .control-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.module-c .chart-area {
+    padding: 20px 30px 30px;
+    position: relative;
+}
+.module-c h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 500;
+}
+.module-c h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 400;
+    opacity: 0.9;
+    margin-top: 5px;
+}
+.module-c select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 14px;
+    min-width: 150px;
+    cursor: pointer;
+}
+.module-c .tooltip {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+}
+.module-c .axis-label {
+    font-size: 14px;
+    fill: #555;
+}
+.module-c .loading {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    color: #666;
+}
+.module-c .footer {
+    padding: 15px 30px;
+    text-align: center;
+    font-size: 13px;
+    color: #888;
+    background-color: #f5f7fa;
+    border-top: 1px solid #e9ecef;
+}
+.module-c .gradient-bar {
+    transition: fill 0.5s ease;
+}
+.module-c .y-line {
+    stroke: #ddd;
+    stroke-dasharray: 3,3;
+}
+
+/* E: Valence & Arousal Relationship */
+.module-e .container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 25px;
+}
+.module-e h1 {
+    color: #444;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+}
+.module-e h2 {
+    color: #555;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+.module-e .chart-container {
+    margin-bottom: 40px;
+}
+.module-e .tooltip h4 {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    color: #444;
+}
+.module-e .tooltip p {
+    margin: 0;
+    line-height: 1.4;
+}
+.module-e .selector-container {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+}
+.module-e label {
+    margin-right: 10px;
+    font-weight: 500;
+}
+.module-e select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 14px;
+    cursor: pointer;
+    min-width: 140px;
+}
+.module-e .dot {
+    cursor: pointer;
+    transition: r 0.2s, opacity 0.2s;
+}
+.module-e .dot:hover {
+    stroke: #555;
+    stroke-width: 1.5;
+}
+.module-e .bar {
+    transition: opacity 0.3s;
+}
+.module-e .bar:hover {
+    opacity: 0.8;
+}
+.module-e .axis text {
+    font-size: 11px;
+    fill: #666;
+}
+.module-e .axis-label {
+    font-weight: 500;
+    font-size: 12px;
+    fill: #555;
+}
+.module-e .grid line {
+    stroke: #e0e0e0;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+}
+.module-e .legend-item {
+    cursor: pointer;
+    font-size: 12px;
+}
+.module-e .bar-label {
+    font-size: 9px;
+    fill: #333;
+    font-weight: 500;
+}
+.module-e .footer {
+    font-size: 12px;
+    text-align: right;
+    margin-top: 20px;
+    color: #888;
+}
+
+/* B: Lyrical Emotion Trends by Language */
+.module-b {
+    --primary-color: #e9b0c5;
+    --secondary-color: #f8d7e3;
+    --accent-color: #e74c3c;
+    --text-color: #333;
+    --light-gray: #f5f5f5;
+    --medium-gray: #ddd;
+    --dark-gray: #777;
+    --chart-bg: #f9f9f9;
+    --tooltip-bg: rgba(255, 255, 255, 0.9);
+}
+.module-b .container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+.module-b header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 1.5rem 2rem;
+    position: relative;
+}
+.module-b h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 500;
+}
+.module-b .subtitle {
+    margin-top: 0.5rem;
+    font-weight: 300;
+    opacity: 0.9;
+}
+.module-b .controls {
+    background-color: white;
+    padding: 1.5rem 2rem;
+    display: flex;
+    gap: 1.5rem;
+    border-bottom: 1px solid var(--medium-gray);
+}
+.module-b .control-group {
+    flex: 1;
+}
+.module-b label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--dark-gray);
+}
+.module-b select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--medium-gray);
+    border-radius: 4px;
+    font-size: 1rem;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%23777' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1.5rem;
+}
+.module-b select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+}
+.module-b .chart-container {
+    padding: 1.5rem 2rem;
+}
+.module-b #chart {
+    width: 100%;
+    height: 500px;
+    background-color: var(--chart-bg);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.module-b .axis path,
+.module-b .axis line {
+    stroke: var(--medium-gray);
+}
+.module-b .axis text {
+    fill: var(--dark-gray);
+    font-size: 12px;
+}
+.module-b .axis-title {
+    fill: var(--dark-gray);
+    font-size: 14px;
+    font-weight: 500;
+}
+.module-b .dot {
+    stroke: white;
+    stroke-width: 1;
+}
+.module-b .regression-line {
+    fill: none;
+    stroke: var(--accent-color);
+    stroke-width: 2;
+    stroke-dasharray: 4, 2;
+}
+.module-b .tooltip {
+    position: absolute;
+    padding: 0.75rem;
+    background-color: var(--tooltip-bg);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    font-size: 0.9rem;
+    z-index: 10;
+    max-width: 200px;
+}
+.module-b .tooltip-title {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid var(--medium-gray);
+    padding-bottom: 0.25rem;
+}
+.module-b .tooltip-value {
+    margin: 0.25rem 0;
+}
+.module-b .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 500px;
+    font-size: 1.25rem;
+    color: var(--dark-gray);
+}
+.module-b .loading span {
+    margin-right: 1rem;
+}
+.module-b .loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--medium-gray);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+.module-b .no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 500px;
+    color: var(--dark-gray);
+    text-align: center;
+    padding: 0 2rem;
+}
+.module-b .no-data-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+.module-b .footer {
+    padding: 1rem 2rem;
+    border-top: 1px solid var(--medium-gray);
+    font-size: 0.9rem;
+    color: var(--dark-gray);
+    text-align: center;
+}
+@media (max-width: 768px) {
+    .module-b .controls {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .module-b .chart-container {
+        padding: 1rem;
+    }
+    .module-b #chart {
+        height: 400px;
+    }
+}
+
+/* D: KMeans Cluster to Episode - Sankey Diagram */
+.module-d .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+.module-d .header {
+    background-color: #f8d7e3;
+    padding: 20px;
+    border-radius: 10px 10px 0 0;
+}
+.module-d .title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    text-align: center;
+}
+.module-d .chart-area {
+    padding: 20px;
+}
+.module-d svg {
+    display: block;
+    margin: 0 auto;
+}
+.module-d .node rect {
+    fill-opacity: 0.9;
+    stroke: #fff;
+    stroke-width: 1px;
+    transition: all 0.3s;
+}
+.module-d .node rect:hover {
+    stroke: #333;
+    stroke-width: 2px;
+    cursor: pointer;
+}
+.module-d .node text {
+    font-size: 13px;
+    font-weight: 500;
+    pointer-events: none;
+    fill: #333;
+}
+.module-d .link {
+    fill: none;
+    stroke-opacity: 0.4;
+    transition: all 0.3s;
+}
+.module-d .link:hover {
+    stroke-opacity: 0.8;
+}
+.module-d .highlight {
+    stroke-opacity: 0.8;
+}
+.module-d .tooltip {
+    position: absolute;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 5px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    font-size: 14px;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.module-d .tooltip-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+}
+.module-d .tooltip-value {
+    color: #666;
+}
+.module-d .footer {
+    font-size: 12px;
+    text-align: right;
+    padding: 10px 20px;
+    color: #888;
+    border-top: 1px solid #eee;
+}
+
+/* VAD Heatmap specific styles */
+.module-vad .cell-label {
+    font-size: 1.15rem;
+    font-weight: 500;
+    fill: #333;
+    pointer-events: none;
+}
+
+.module-vad .cell-value {
+    font-size: 1.20rem;
+    font-weight: 700;
+    fill: #222;
+    pointer-events: none;
+}
+
+.module-vad .cell {
+    stroke: #fff;
+    stroke-width: 2.5;
+    transition: all 0.2s ease;
+}
+
+.module-vad .colorbar-label {
+    font-size: 1.08rem;
+    fill: #444;
+}
+
+.module-vad .colorbar-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    fill: #333;
+}
+
+.module-vad .heatmap-caption {
+    font-size: 0.9rem;
+    fill: #666;
+    font-style: italic;
+}
+
+/* UMAP Module Styles */
+.module-umap .container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 52px;
+    flex-wrap: wrap;
+}
+
+/* 修改为横向布局 */
+.module-umap .horizontal-container {
+    display: flex;
+    flex-direction: row;  /* 这里改为 row 表示横向排列 */
+    justify-content: center;
+    align-items: flex-start;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+
+/* 调整每个图表卡片的宽度，使其适合横排 */
+.module-umap .plot-card {
+    flex: 1;
+    min-width: 480px;
+    max-width: 580px;
+}
+
+/* 响应式设计：在较小屏幕上仍然垂直排列 */
+@media (max-width: 1100px) {
+    .module-umap .horizontal-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .module-umap .plot-card {
+        width: 100%;
+    }
+}
+
+.module-umap .plot-card:hover {
+    box-shadow: 0 16px 36px rgba(38,42,50,0.11);
+}
+
+.module-umap .plot-title {
+    font-size: 1.60rem;
+    font-weight: 800;
+    color: #1A222C;
+    margin-bottom: 14px;
+    letter-spacing: 0.01em;
+    text-align: left;
+    white-space: nowrap;
+    overflow: visible;
+    margin-left: 8px;
+}
+
+.module-umap .legend {
+    font-size: 1.11rem;
+    font-weight: 600;
+    margin-top: 20px;
+    margin-bottom: 2px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; 
+    gap: 24px;
+    background: none;
+    border-radius: 16px;
+    overflow-x: auto;
+    align-items: center;
+    padding-bottom: 4px;
+}
+
+.module-umap .legend-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: rgba(245, 247, 250, 0.5);
+    border-radius: 12px;
+    margin: 4px;
+    transition: all 0.2s;
+}
+
+.module-umap .legend-item:hover {
+    background-color: rgba(235, 237, 240, 0.8);
+    transform: translateY(-2px);
+}
+
+.module-umap .legend-color {
+    display: inline-block;
+    width: 22px; 
+    height: 22px;
+    border-radius: 50%;
+    margin-right: 8px;
+    border: 2px solid #f0f0f2;
+    vertical-align: middle;
+    box-shadow: 0 0 4px rgba(0,0,0,0.15);
+}
+
+.module-umap .axis text {
+    font-size: 1.10rem;
+    font-weight: 400;
+    fill: #6E7A89;
+}
+
+.module-umap .axis path,
+.module-umap .axis line {
+    stroke: #e7eaf0;
+    stroke-width: 1.2px;
+    shape-rendering: crispEdges;
+}
+
+.module-umap .axis .domain {
+    stroke: #CCD1D8;
+    stroke-width: 1.8px;
+}
+
+.module-umap .grid line {
+    stroke: #e7eaf0;
+    stroke-opacity: 0.5;
+}
+
+.module-umap .point {
+    transition: r 0.17s, filter 0.2s, opacity 0.2s;
+    cursor: pointer;
+}
+
+/* @media (max-width: 1200px) {
+    .module-umap .container {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+    }
+    
+    .module-umap .plot-card {
+        min-width: auto;
+        width: 100%;
+    }
+} */
+
+/* UMAP Module Styles - Performance Optimizations */
+.module-umap .data-note {
+    font-size: 0.8rem;
+    color: #888;
+    font-style: italic;
+    text-align: center;
+    margin-top: 5px;
+}
+
+.module-umap canvas {
+    border-radius: 8px;
+}
+
+/* Module CMATRIX: Confusion Matrix Styles */
+.module-cmatrix .container {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(28,32,36,0.09);
+  padding: 28px;
+  margin: 0 auto;
+}
+
+.module-cmatrix .header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #18203A;
+}
+
+#confusion-matrix-container {
+  min-height: 485px;
+  position: relative;
+  overflow: hidden;
+}
+
+.axis-label {
+  font-size: 1rem;
+  font-weight: 700;
+  fill: #19233D;
+}
+
+.axis-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  fill: #18203A;
+}
+
+.cell-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.cell-rect {
+  transition: stroke 0.2s ease-in-out, fill 0.3s ease-in-out;
+}
+
+.colorbar-label {
+  font-size: 0.85rem;
+  fill: #404958;
+  text-anchor: end;
+  font-weight: 600;
+}
+
+.loading-text {
+  font-size: 1rem;
+  fill: #6b7280;
+  font-weight: 500;
+}
+
+/* Styles for Structural-Emotional Correlation Matrix */
+.module-structe .container {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(28,32,36,0.09);
+    padding: 30px;
+    margin: 0 auto;
+}
+
+#heatmap-container {
+    min-height: 500px;
+    position: relative;
+}
+
+#loading-structe {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    color: #666;
+}
+
+.matrix-title {
+    font-size: 1.44rem;
+    font-weight: 800;
+    margin-bottom: 24px;
+    color: #1A222C;
+    text-align: left;
+    letter-spacing: 0.01em;
+}
+
+.matrix-subtitle {
+    font-size: 0.95rem;
+    color: #4c5a6c;
+    margin-bottom: 20px;
+}
+
+.axis-label {
+    font-size: 1.07rem;
+    font-weight: 700;
+    fill: #283449;
+    cursor: default;
+}
+
+.cell-text {
+    font-size: 1.00rem;
+    font-weight: 700;
+    pointer-events: none;
+}
+
+.cell-rect {
+    stroke: #f0f2f5;
+    stroke-width: 1.2px;
+    shape-rendering: crispEdges;
+    transition: stroke 0.2s ease-in-out;
+}
+
+.colorbar-label {
+    font-size: 0.97rem;
+    fill: #384458;
+    text-anchor: end;
+    font-weight: 600;
+}
+
+.colorbar-tick line {
+    stroke: #cdd8e8;
+}
+
+#tooltip-structe {
+    position: absolute;
+    padding: 12px;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.15);
+    pointer-events: none;
+    font-size: 14px;
+    max-width: 220px;
+    z-index: 100;
+}
+
+#tooltip-structe .tooltip-title {
+    font-weight: 700;
+    margin-bottom: 5px;
+    font-size: 15px;
+    color: #1A222C;
+}
+
+#tooltip-structe .tooltip-value {
+    margin-bottom: 3px;
+    font-weight: 600;
+}
+
+#tooltip-structe .tooltip-hint {
+    font-style: italic;
+    font-size: 13px;
+    color: #607080;
+}
+
+@media (max-width: 768px) {
+    .module-structe .container {
+        padding: 15px;
+    }
+    
+    #heatmap-container {
+        min-height: 350px;
+        overflow-x: auto;
+    }
+}
+
+/* Module Episode Signature styles */
+.module-episode .feature-selector-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.module-episode .feature-select-label {
+    font-weight: 600;
+    margin-right: 15px;
+    font-size: 14px;
+}
+
+.module-episode .feature-select {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 15px;
+    border-radius: 6px;
+    border: 1.5px solid #c4cce6;
+    background-color: #f8faff;
+    color: #333;
+    min-width: 240px;
+}
+
+.module-episode .episode-bar {
+    transition: all 0.2s ease;
+}
+
+.module-episode .episode-tooltip {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    padding: 10px 14px;
+    pointer-events: none;
+}
+
+.module-episode .tooltip-header {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 3px;
+}
+
+.module-episode .tooltip-content {
+    font-size: 13px;
+}
+
+.module-episode .bar-label {
+    font-size: 11px;
+    fill: #555;
+}
+
+.module-episode .chart-title {
+    font-family: 'Roboto', sans-serif;
+}
+
+.module-episode .grid-lines line {
+    stroke-opacity: 0.5;
+}
+
+
+/* Module Episode Signature Styles */
+.module-episode-signature .feature-select {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.module-episode-signature .feature-radio {
+    background-color: #f5f7fa;
+    border-radius: 20px;
+    padding: 6px 12px;
+    margin-right: 10px;
+    margin-bottom: 8px;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.module-episode-signature .feature-radio:hover {
+    background-color: #e8eef7;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.module-episode-signature input[type="radio"] {
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.module-episode-signature .feature-description {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 20px;
+    padding-left: 5px;
+}
+
+.module-episode-signature .chart-area {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.module-episode-signature .bar {
+    transition: opacity 0.2s, stroke-width 0.2s;
+}
+
+
+/* Module Episode Signature */
+.module-episode-sig .chart-title {
+    font-weight: bold;
+    fill: #1A222C;
+}
+
+.module-episode-sig .chart-subtitle {
+    fill: #52607A;
+}
+
+.module-episode-sig .bar {
+    transition: opacity 0.2s, stroke-width 0.2s;
+    cursor: pointer;
+}
+
+.module-episode-sig .legend-item {
+    transition: font-weight 0.2s;
+}
+
+.module-episode-sig .axis line,
+.module-episode-sig .axis path {
+    stroke: #e0e0e0;
+}
+
+.module-episode-sig .grid line {
+    stroke: #e0e0e0;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+}

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Episode Signature Comparison</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <style>
+    body {
+      background: #FAFAFA;
+      font-family: "Inter", Arial, sans-serif;
+    }
+    .container {
+      max-width: 950px;
+      margin: 40px auto;
+      padding: 40px 28px 24px 38px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(40,40,40,0.10);
+    }
+    .title {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: #1A222C;
+      margin-bottom: 16px;
+    }
+    .subtitle {
+      font-size: 1.12rem;
+      color: #52607A;
+      margin-bottom: 28px;
+      margin-top: -8px;
+    }
+    .feature-select {
+      margin-bottom: 20px;
+    }
+    .feature-select label {
+      font-size: 1.09rem;
+      margin-right: 14px;
+      color: #374151;
+      cursor: pointer;
+    }
+    .bar {
+      fill: #5396EB;
+      rx: 6;
+      transition: fill 0.2s;
+    }
+    .bar:hover {
+      fill: #3160c8;
+    }
+    .axis-label {
+      font-weight: 600;
+      fill: #25344E;
+    }
+    .y.axis .tick text {
+      font-size: 1rem;
+      fill: #444A55;
+    }
+    .x.axis .tick text {
+      font-size: 1.04rem;
+      font-weight: 600;
+      fill: #232f3d;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">Episode Signature Comparison</div>
+    <div class="subtitle">Compare feature statistics across episode categories. Choose feature below:</div>
+    <div class="feature-select" id="feature-select"></div>
+    <svg id="barchart" width="850" height="420"></svg>
+  </div>
+  <script>
+    // =============== Config ===============
+    const margin = { top: 32, right: 24, bottom: 64, left: 70 };
+    const width = 850 - margin.left - margin.right;
+    const height = 420 - margin.top - margin.bottom;
+
+    // =============== Features for selection ===============
+    const features = [
+      { key: "type_token_ratio", name: "Type-Token Ratio" },
+      { key: "metaphor_density", name: "Metaphor Density" },
+      { key: "first_person_pronouns", name: "First Person Pronouns" },
+      { key: "negation_count", name: "Negation Count" },
+      { key: "question_count", name: "Question Count" },
+      { key: "exclamation_count", name: "Exclamation Count" }
+    ];
+
+    let currentFeature = features[0].key;
+
+    // =============== SVG Setup ===============
+    const svg = d3.select("#barchart")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom);
+
+    const chart = svg.append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // =============== Draw Feature Selector ===============
+    const selector = d3.select("#feature-select");
+    selector.selectAll("input")
+      .data(features)
+      .join("span")
+      .html(d =>
+        `<label>
+          <input type="radio" name="feature" value="${d.key}" ${d.key === currentFeature ? "checked" : ""}>
+          ${d.name}
+        </label>`
+      );
+
+    // =============== Draw Chart ===============
+    d3.csv("episode_signature_features.csv").then(data => {
+      data.forEach(d => {
+        features.forEach(f => d[f.key] = +d[f.key]);
+      });
+
+      const episodes = data.map(d => d.episode);
+
+      function updateChart(featureKey) {
+        currentFeature = featureKey;
+        const values = data.map(d => d[featureKey]);
+        const yMax = d3.max(values) * 1.13;
+
+        // Scales
+        const x = d3.scaleBand()
+          .domain(episodes)
+          .range([0, width])
+          .padding(0.22);
+
+        const y = d3.scaleLinear()
+          .domain([0, yMax])
+          .range([height, 0]);
+
+        // Remove old
+        chart.selectAll(".bar").remove();
+        chart.selectAll(".x.axis").remove();
+        chart.selectAll(".y.axis").remove();
+        chart.selectAll(".y-label").remove();
+        chart.selectAll(".x-label").remove();
+
+        // Draw bars
+        chart.selectAll(".bar")
+          .data(data)
+          .join("rect")
+          .attr("class", "bar")
+          .attr("x", d => x(d.episode))
+          .attr("width", x.bandwidth())
+          .attr("y", d => y(d[featureKey]))
+          .attr("height", d => height - y(d[featureKey]));
+
+        // X axis
+        chart.append("g")
+          .attr("class", "x axis")
+          .attr("transform", `translate(0,${height})`)
+          .call(d3.axisBottom(x))
+          .selectAll("text")
+          .attr("font-size", "1.13rem")
+          .attr("font-weight", "700")
+          .attr("transform", "rotate(15)")
+          .style("text-anchor", "start");
+
+        // Y axis
+        chart.append("g")
+          .attr("class", "y axis")
+          .call(d3.axisLeft(y).ticks(6));
+
+        // Y label
+        chart.append("text")
+          .attr("class", "y-label axis-label")
+          .attr("x", -44)
+          .attr("y", -14)
+          .attr("text-anchor", "start")
+          .attr("font-size", "1.12rem")
+          .text(features.find(f => f.key === featureKey).name);
+
+        // X label
+        chart.append("text")
+          .attr("class", "x-label axis-label")
+          .attr("x", width/2)
+          .attr("y", height + 48)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "1.10rem")
+          .text("Episode Category");
+      }
+
+      // Initial draw
+      updateChart(currentFeature);
+
+      // Feature selector interaction
+      selector.selectAll("input[name=feature]")
+        .on("change", function() {
+          updateChart(this.value);
+        });
+    });
+  </script>
+</body>
+</html>

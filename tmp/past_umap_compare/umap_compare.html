@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>UMAP Clustering Comparison</title>
+  <script src="js/d3.v7.min.js"></script>
+  <style>
+    body {
+      background: #F5F7FA;
+      font-family: "Inter", "Arial", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 52px;
+      margin-top: 48px;
+    }
+    .plot-card {
+      background: #fff;
+      border-radius: 28px;
+      box-shadow: 0 8px 32px rgba(28,32,36,0.09);
+      padding: 30px 36px 24px 36px;
+      min-width: 540px;
+      max-width: 660px;
+      transition: box-shadow 0.18s;
+    }
+    .plot-card:hover {
+      box-shadow: 0 16px 36px rgba(38,42,50,0.11);
+    }
+    .plot-title {
+      font-size: 1.60rem;
+      font-weight: 800;
+      color: #1A222C;
+      margin-bottom: 14px;
+      letter-spacing: 0.01em;
+      text-align: left;
+      white-space: nowrap;
+      overflow: visible;
+      margin-left: 8px;
+    }
+    .legend {
+      font-size: 1.11rem;
+      font-weight: 600;
+      margin-top: 20px;
+      margin-bottom: 2px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: nowrap; 
+      gap: 24px;
+      background: none;
+      border-radius: 16px;
+      white-space: nowrap; 
+      overflow-x: auto;
+      align-items: center;
+      padding-bottom: 4px;
+    }
+    .legend-color {
+      display: inline-block;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      margin-right: 8px;
+      border: 2px solid #f0f0f2;
+      vertical-align: middle;
+      box-shadow: 0 0 1px #bbb;
+    }
+    .axis text {
+      font-size: 1.10rem;
+      font-weight: 400;
+      fill: #6E7A89;
+    }
+    .axis path,
+    .axis line {
+      stroke: #e7eaf0;
+      stroke-width: 1.2px;
+      shape-rendering: crispEdges;
+    }
+    .axis .domain {
+      stroke: #CCD1D8;
+      stroke-width: 1.8px;
+    }
+    .tick line {
+      stroke: #e7eaf0;
+    }
+    .point {
+      transition: r 0.17s, filter 0.2s;
+      cursor: pointer;
+      opacity: 0.88;
+    }
+    .point:hover {
+      r: 8 !important;
+      filter: drop-shadow(0 0 6px #aaa);
+      opacity: 1;
+      z-index: 9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="plot-card">
+      <div class="plot-title">UMAP Projection Colored by KMeans Cluster</div>
+      <svg id="umap-kmeans" width="520" height="480"></svg>
+      <div class="legend" id="legend-kmeans"></div>
+    </div>
+    <div class="plot-card">
+      <div class="plot-title">UMAP of Lyrics Colored by Dominant Episode</div>
+      <svg id="umap-episode" width="520" height="480"></svg>
+      <div class="legend" id="legend-episode"></div>
+    </div>
+  </div>
+  <script>
+    // Colors and legend as before
+    const clusterColors = [
+      "#60C1B6","#F5B166","#C87FC5","#7DB0E6","#EC6E62","#B3B4B8",
+      "#F0D96B","#8CB79A","#EB99C0","#7D8CA7"
+    ];
+    const episodeColorDict = {
+      "EDR": "#60C1B6",
+      "CB": "#F5B166",
+      "PEP": "#7D8CA7",
+      "FM": "#EC6E62",
+      "AIA": "#C87FC5",
+      "Unclassified": "#B3B4B8"
+    };
+
+    // --- KMeans clustering plot ---
+    d3.csv("umap_kmeans.csv").then(function(data) {
+      data.forEach(d => {
+        d.umap_x = +d.umap_x;
+        d.umap_y = +d.umap_y;
+      });
+      const clusters = Array.from(new Set(data.map(d => d.kmeans_cluster))).sort((a, b) => +a - +b);
+
+      const x = d3.scaleLinear().domain(d3.extent(data, d => d.umap_x)).range([46, 500]);
+      const y = d3.scaleLinear().domain(d3.extent(data, d => d.umap_y)).range([450, 40]);
+
+      const svg = d3.select("#umap-kmeans");
+      svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0,450)")
+        .call(d3.axisBottom(x).ticks(7).tickSize(-410));
+      svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(46,0)")
+        .call(d3.axisLeft(y).ticks(7).tickSize(-454));
+
+      svg.selectAll(".point")
+        .data(data)
+        .join("circle")
+        .attr("class", "point")
+        .attr("cx", d => x(d.umap_x))
+        .attr("cy", d => y(d.umap_y))
+        .attr("r", 5.5)
+        .attr("fill", d => clusterColors[clusters.indexOf(d.kmeans_cluster) % clusterColors.length])
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 0.8);
+
+    
+      const legendDiv = d3.select("#legend-kmeans");
+      legendDiv.selectAll(".legend-item")
+        .data(clusters)
+        .join("span")
+        .attr("class", "legend-item")
+        .style("white-space", "nowrap")
+        .html((c, i) => `<span class="legend-color" style="background:${clusterColors[i % clusterColors.length]}"></span>${c}`);
+    });
+
+    // --- Dominant Episode clustering plot ---
+    d3.csv("umap_dominant_episode.csv").then(function(data) {
+      data.forEach(d => {
+        d.umap_x = +d.umap_x;
+        d.umap_y = +d.umap_y;
+      });
+      const episodes = Array.from(new Set(data.map(d => d.dominant_episode)))
+        .sort((a,b)=>["EDR","CB","PEP","FM","AIA","Unclassified"].indexOf(a)-["EDR","CB","PEP","FM","AIA","Unclassified"].indexOf(b));
+      const x = d3.scaleLinear().domain(d3.extent(data, d => d.umap_x)).range([46, 500]);
+      const y = d3.scaleLinear().domain(d3.extent(data, d => d.umap_y)).range([450, 40]);
+
+      const svg = d3.select("#umap-episode");
+      svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0,450)")
+        .call(d3.axisBottom(x).ticks(7).tickSize(-410));
+      svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(46,0)")
+        .call(d3.axisLeft(y).ticks(7).tickSize(-454));
+
+      svg.selectAll(".point")
+        .data(data)
+        .join("circle")
+        .attr("class", "point")
+        .attr("cx", d => x(d.umap_x))
+        .attr("cy", d => y(d.umap_y))
+        .attr("r", 5.5)
+        .attr("fill", d => episodeColorDict[d.dominant_episode] || "#B3B4B8")
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 0.8);
+
+      const legendDiv = d3.select("#legend-episode");
+      legendDiv.selectAll(".legend-item")
+        .data(episodes)
+        .join("span")
+        .attr("class", "legend-item")
+        .style("white-space", "nowrap")
+        .html((c) => `<span class="legend-color" style="background:${episodeColorDict[c] || "#B3B4B8"}"></span>${c}`);
+    });
+  </script>
+</body>
+</html>

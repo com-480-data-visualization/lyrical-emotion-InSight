@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Episode Signature Comparison (Grouped Bar Chart)</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <style>
+    body {
+      background: #FAFAFA;
+      font-family: "Inter", Arial, sans-serif;
+    }
+    .container {
+      max-width: 980px;
+      margin: 38px auto 0 auto;
+      padding: 36px 28px 32px 38px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(40,40,40,0.10);
+    }
+    .title {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: #1A222C;
+      margin-bottom: 14px;
+    }
+    .subtitle {
+      font-size: 1.10rem;
+      color: #52607A;
+      margin-bottom: 18px;
+      margin-top: -8px;
+    }
+    .legend {
+      font-size: 1.03rem;
+      font-weight: 600;
+    }
+    .legend rect {
+      rx: 4;
+    }
+    .bar:hover {
+      filter: brightness(0.88);
+    }
+    .x.axis .tick text {
+      font-size: 1.12rem;
+      font-weight: 700;
+      fill: #273449;
+    }
+    .y.axis .tick text {
+      font-size: 1rem;
+      fill: #485060;
+    }
+    .axis-label {
+      font-weight: 700;
+      fill: #25344E;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">Episode Signature Comparison</div>
+    <div class="subtitle">Feature group comparison for each episode (Grouped Bar Chart)</div>
+    <svg id="grouped-bar" width="910" height="460"></svg>
+  </div>
+  <script>
+    // Config
+    const margin = { top: 38, right: 24, bottom: 70, left: 64 };
+    const width = 910 - margin.left - margin.right;
+    const height = 460 - margin.top - margin.bottom;
+
+    // Color palette for features
+    const featureDefs = [
+      { key: "type_token_ratio", name: "Type-Token Ratio", color: "#4981f4" },
+      { key: "metaphor_density", name: "Metaphor Density", color: "#ffb243" },
+      { key: "first_person_pronouns", name: "First Person Pronouns", color: "#52ba77" },
+      { key: "negation_count", name: "Negation Count", color: "#e16d6d" },
+      { key: "question_count", name: "Question Count", color: "#9569d4" },
+      { key: "exclamation_count", name: "Exclamation Count", color: "#bc9068" }
+    ];
+
+    // Prepare SVG
+    const svg = d3.select("#grouped-bar")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom);
+
+    const g = svg.append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // Read data
+    d3.csv("episode_signature_features.csv").then(data => {
+      // Parse numbers
+      data.forEach(d => featureDefs.forEach(f => d[f.key] = +d[f.key]));
+      const episodes = data.map(d => d.episode);
+
+      // X scales
+      const x0 = d3.scaleBand()
+        .domain(episodes)
+        .range([0, width])
+        .padding(0.19);
+
+      const x1 = d3.scaleBand()
+        .domain(featureDefs.map(f => f.key))
+        .range([0, x0.bandwidth()])
+        .padding(0.12);
+
+      // Y scale (auto max)
+      const yMax = d3.max(data, d => d3.max(featureDefs, f => d[f.key])) * 1.13;
+      const y = d3.scaleLinear()
+        .domain([0, yMax])
+        .nice()
+        .range([height, 0]);
+
+      // X axis
+      g.append("g")
+        .attr("class", "x axis")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x0))
+        .selectAll("text")
+        .attr("font-size", "1.14rem")
+        .attr("font-weight", 700)
+        .attr("transform", "rotate(15)")
+        .style("text-anchor", "start");
+
+      // Y axis
+      g.append("g")
+        .attr("class", "y axis")
+        .call(d3.axisLeft(y).ticks(7));
+
+      // Y label
+      g.append("text")
+        .attr("class", "axis-label")
+        .attr("x", -43)
+        .attr("y", -15)
+        .attr("text-anchor", "start")
+        .attr("font-size", "1.10rem")
+        .text("Average Feature Value");
+
+      // X label
+      g.append("text")
+        .attr("class", "axis-label")
+        .attr("x", width / 2)
+        .attr("y", height + 56)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "1.07rem")
+        .text("Episode Category");
+
+      // Bars
+      g.selectAll("g.episode-group")
+        .data(data)
+        .join("g")
+        .attr("class", "episode-group")
+        .attr("transform", d => `translate(${x0(d.episode)},0)`)
+        .selectAll("rect")
+        .data(d => featureDefs.map(f => ({ key: f.key, value: d[f.key], color: f.color })))
+        .join("rect")
+        .attr("class", "bar")
+        .attr("x", d => x1(d.key))
+        .attr("y", d => y(d.value))
+        .attr("width", x1.bandwidth())
+        .attr("height", d => height - y(d.value))
+        .attr("fill", d => d.color);
+
+      // Legend
+      const legend = svg.append("g")
+        .attr("class", "legend")
+        .attr("transform", `translate(${width-100},${margin.top-16})`);
+      legend.selectAll("rect")
+        .data(featureDefs)
+        .join("rect")
+        .attr("x", 0)
+        .attr("y", (d,i) => i*24)
+        .attr("width", 18)
+        .attr("height", 18)
+        .attr("rx", 4)
+        .attr("fill", d => d.color);
+      legend.selectAll("text")
+        .data(featureDefs)
+        .join("text")
+        .attr("x", 27)
+        .attr("y", (d,i) => i*24 + 13)
+        .attr("fill", "#283449")
+        .text(d => d.name);
+
+    });
+  </script>
+</body>
+</html>

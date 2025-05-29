@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lexicon-Based VAD Correlation Matrix</title>
+  <script src="js/d3.v7.min.js"></script>
+  <style>
+    body {
+      background: #fafbfc;
+      font-family: "Inter", "Arial", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .heatmap-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #222;
+      margin-left: 40px;
+      margin-top: 42px;
+      margin-bottom: 10px;
+      letter-spacing: 0.01em;
+    }
+    .cell-label {
+      font-size: 1.15rem;
+      font-weight: 500;
+      fill: #333;
+      pointer-events: none;
+    }
+    .cell-value {
+      font-size: 1.20rem;
+      font-weight: 700;
+      fill: #222;
+      pointer-events: none;
+    }
+    .cell {
+      stroke: #fff;
+      stroke-width: 2.5;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.04));
+      transition: filter 0.2s;
+    }
+    .cell:hover {
+      filter: drop-shadow(0 0 10px #aaa);
+      cursor: pointer;
+    }
+    .colorbar-label {
+      font-size: 1.08rem;
+      fill: #444;
+    }
+    #container {
+      margin: 38px auto 0 auto;
+      max-width: 980px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 5px 36px rgba(28,32,36,0.07);
+      padding-bottom: 44px;
+      min-height: 800px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div class="heatmap-title">Lexicon-Based VAD Correlation Matrix</div>
+    <svg id="heatmap" width="980" height="700"></svg>
+  </div>
+  <script>
+    d3.json("vad_correlation.json").then(function(data) {
+
+      // Extract unique row and column names
+      const rows = Array.from(new Set(data.map(d => d.row)));
+      const cols = Array.from(new Set(data.map(d => d.column)));
+
+      // Layout configuration: bigger chart for better spacing
+      const margin = {top: 74, right: 120, bottom: 64, left: 200},
+            cellSize = 140,
+            width = margin.left + margin.right + cols.length * cellSize,
+            height = margin.top + margin.bottom + rows.length * cellSize;
+
+      // Set SVG size
+      const svg = d3.select("#heatmap")
+        .attr("width", width)
+        .attr("height", height);
+
+      // Color scale (ColorBrewer RdBu style)
+      const color = d3.scaleLinear()
+        .domain([-1, 0, 1])
+        .range(["#3298cb", "#f7f7f7", "#d9534f"]);
+
+      // Draw white background for SVG
+      svg.append("rect")
+        .attr("x", 0).attr("y", 0)
+        .attr("width", width).attr("height", height)
+        .attr("fill", "#fff")
+        .lower();
+
+      // Draw heatmap cells
+      svg.selectAll("rect.cell")
+        .data(data)
+        .join("rect")
+        .attr("class", "cell")
+        .attr("x", d => margin.left + cols.indexOf(d.column) * cellSize)
+        .attr("y", d => margin.top + rows.indexOf(d.row) * cellSize)
+        .attr("width", cellSize)
+        .attr("height", cellSize)
+        .attr("rx", 18)
+        .attr("fill", d => color(d.value));
+
+      // Cell value text (centered in each cell)
+      svg.selectAll("text.cell-value")
+        .data(data)
+        .join("text")
+        .attr("class", "cell-value")
+        .attr("x", d => margin.left + cols.indexOf(d.column) * cellSize + cellSize / 2)
+        .attr("y", d => margin.top + rows.indexOf(d.row) * cellSize + cellSize / 2 + 10)
+        .attr("text-anchor", "middle")
+        .text(d => d.value.toFixed(2));
+
+      // Draw row labels (vertical, left)
+      svg.selectAll("text.row-label")
+        .data(rows)
+        .join("text")
+        .attr("class", "cell-label")
+        .attr("x", margin.left - 22)
+        .attr("y", (d, i) => margin.top + i * cellSize + cellSize / 2 + 12)
+        .attr("text-anchor", "end")
+        .text(d => d.replace("_lexicon", "").replace(/^./, c => c.toUpperCase()));
+
+      // Draw column labels (horizontal, top)
+      svg.selectAll("text.col-label")
+        .data(cols)
+        .join("text")
+        .attr("class", "cell-label")
+        .attr("x", (d, i) => margin.left + i * cellSize + cellSize / 2)
+        .attr("y", margin.top - 28)
+        .attr("text-anchor", "middle")
+        .text(d => d.replace("_lexicon", "").replace(/^./, c => c.toUpperCase()));
+
+      // Color bar (vertical gradient)
+      const defs = svg.append("defs");
+      const linearGradient = defs.append("linearGradient")
+        .attr("id", "linear-gradient")
+        .attr("x1", "0%").attr("y1", "100%")
+        .attr("x2", "0%").attr("y2", "0%");
+
+      linearGradient.selectAll("stop")
+        .data([
+          {offset: "0%", color: "#3298cb"},
+          {offset: "50%", color: "#f7f7f7"},
+          {offset: "100%", color: "#d9534f"}
+        ])
+        .enter().append("stop")
+        .attr("offset", d => d.offset)
+        .attr("stop-color", d => d.color);
+
+      // Color bar layout and position
+      const cb_x = width - margin.right + 44,
+            cb_y = margin.top,
+            cb_w = 22,
+            cb_h = cellSize * rows.length;
+
+      svg.append("rect")
+        .attr("x", cb_x)
+        .attr("y", cb_y)
+        .attr("width", cb_w)
+        .attr("height", cb_h)
+        .style("fill", "url(#linear-gradient)")
+        .attr("rx", 9);
+
+      // Color bar axis (tick marks and numbers)
+      const cbScale = d3.scaleLinear().domain([-1, 1]).range([cb_h + cb_y, cb_y]);
+      const cbAxis = d3.axisRight(cbScale)
+        .ticks(5)
+        .tickFormat(d3.format(".2f"));
+
+      svg.append("g")
+        .attr("class", "colorbar-label")
+        .attr("transform", `translate(${cb_x + cb_w},0)`)
+        .call(cbAxis)
+        .call(g => g.selectAll(".domain").attr("stroke", "#eee"))
+        .call(g => g.selectAll(".tick line").attr("stroke", "#bbb"));
+    });
+  </script>
+</body>
+</html>

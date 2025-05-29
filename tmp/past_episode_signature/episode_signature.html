@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Episode Feature Bar Chart</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { font-family: "Inter", Arial, sans-serif; background: #f7fafd;}
+        #container { width: 670px; margin: 50px auto; background: #fff; padding: 36px 32px 26px 44px; border-radius: 18px; box-shadow: 0 8px 32px rgba(28,32,36,0.10);}
+        #featureSelect { font-size: 1.09rem; font-weight: 500; margin-bottom: 18px; border-radius: 7px; padding: 7px 14px; border: 1.3px solid #c4cce6;}
+        .bar { fill: #6e99f6;}
+        .bar:hover { fill: #4678df;}
+        .axis-label { font-size: 1.07rem; font-weight: 600;}
+    </style>
+</head>
+<body>
+    <div id="container">
+        <label for="featureSelect" style="font-size:1.09rem;font-weight:600;">Select Feature:</label>
+        <select id="featureSelect"></select>
+        <svg id="chart" width="560" height="340"></svg>
+    </div>
+    <script>
+        d3.csv("episode_signature.csv").then(function(data) {
+            // 1. Get all feature columns except episode
+            const features = data.columns.filter(d => d !== "episode");
+            // Populate dropdown
+            d3.select("#featureSelect")
+                .selectAll("option")
+                .data(features)
+                .enter()
+                .append("option")
+                .attr("value", d => d)
+                .text(d => d.replaceAll("_", " "));
+
+            // 2. Draw bar chart for selected feature
+            function draw(feature) {
+                const svg = d3.select("#chart");
+                svg.selectAll("*").remove();
+
+                const margin = {top: 40, right: 28, bottom: 48, left: 60},
+                      width = +svg.attr("width") - margin.left - margin.right,
+                      height = +svg.attr("height") - margin.top - margin.bottom;
+                const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+
+                // Sort episodes by value (descending)
+                const sortedData = data.slice().sort((a, b) => d3.descending(+a[feature], +b[feature]));
+                const episodes = sortedData.map(d => d.episode);
+
+                // X and Y scales
+                const x = d3.scaleBand().domain(episodes).range([0, width]).padding(0.20);
+                const y = d3.scaleLinear()
+                    .domain([0, d3.max(sortedData, d => +d[feature]) * 1.12])
+                    .nice().range([height, 0]);
+
+                // Bars
+                g.selectAll(".bar")
+                    .data(sortedData)
+                    .enter().append("rect")
+                    .attr("class", "bar")
+                    .attr("x", d => x(d.episode))
+                    .attr("y", d => y(+d[feature]))
+                    .attr("width", x.bandwidth())
+                    .attr("height", d => height - y(+d[feature]))
+                    .append("title").text(d => +d[feature]);
+
+                // X axis
+                g.append("g")
+                    .attr("transform", `translate(0,${height})`)
+                    .call(d3.axisBottom(x))
+                    .selectAll("text").attr("font-size", "1.06rem").attr("dy", "0.7em");
+
+                // Y axis
+                g.append("g").call(d3.axisLeft(y));
+
+                // Y label
+                g.append("text")
+                    .attr("class", "axis-label")
+                    .attr("transform", "rotate(-90)")
+                    .attr("x", -height / 2)
+                    .attr("y", -44)
+                    .attr("text-anchor", "middle")
+                    .attr("fill", "#223")
+                    .text(feature.replaceAll("_", " "));
+
+                // Chart title
+                svg.append("text")
+                    .attr("x", margin.left + width / 2)
+                    .attr("y", margin.top - 18)
+                    .attr("text-anchor", "middle")
+                    .attr("font-size", "1.17rem")
+                    .attr("font-weight", "700")
+                    .attr("fill", "#222")
+                    .text(`${feature.replaceAll("_", " ")} by Episode`);
+            }
+
+            // Draw first feature
+            draw(features[0]);
+
+            // Change event
+            d3.select("#featureSelect").on("change", function() {
+                draw(this.value);
+            });
+        });
+    </script>
+</body>
+</html>

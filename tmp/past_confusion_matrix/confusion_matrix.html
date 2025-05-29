@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Confusion Matrix (VAD → Episode)</title>
+  <script src="js/d3.v7.min.js"></script>
+  <style>
+    body {
+      background: #F5F7FA;
+      font-family: "Inter", "Arial", sans-serif;
+    }
+    .matrix-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(28,32,36,0.11);
+      padding: 32px 38px 32px 40px;
+      margin: 48px auto 0 auto;
+      max-width: 1200px;
+      min-width: 920px;
+    }
+    .matrix-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 30px;
+      color: #18203A;
+      text-align: left;
+    }
+    .axis-label {
+      font-size: 1.13rem;
+      font-weight: 800;
+      fill: #19233D;
+    }
+    .cell-text {
+      font-size: 1.07rem;
+      font-weight: 800;
+      fill: #111;
+      pointer-events: none;
+    }
+    .cell-rect {
+      stroke: #e5e8ed;
+      stroke-width: 1.2px;
+      shape-rendering: crispEdges;
+    }
+    .colorbar-label {
+      font-size: 1.03rem;
+      fill: #404958;
+      text-anchor: end;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="matrix-card">
+    <div class="matrix-title">Confusion Matrix (VAD → Episode)</div>
+    <svg id="matrix" width="1150" height="485"></svg>
+  </div>
+  <script>
+    d3.csv("confusion_matrix.csv").then(function(raw) {
+      // Extract class labels and prepare data in matrix format
+      const labels = Object.keys(raw[0]).filter(k=>k!=="True");
+      const n = labels.length;
+      const data = [];
+      raw.forEach((row,i)=>{
+        labels.forEach((pred,j)=>{
+          data.push({
+            row: i, col: j,
+            true_label: row["True"],
+            pred_label: pred,
+            value: +row[pred]
+          });
+        });
+      });
+
+      // Main sizing parameters: make columns wider for more room
+      const cellWidth = 100, cellHeight = 56;
+      const margin = {top:65,left:125}, width = margin.left+n*cellWidth+120, height = margin.top+n*cellHeight+60;
+      const maxValue = d3.max(data, d=>d.value);
+
+      // Blues color gradient
+      const color = d3.scaleSequential(d3.interpolateBlues)
+        .domain([0, maxValue]);
+
+      const svg = d3.select("#matrix")
+        .attr("width", width)
+        .attr("height", height);
+
+      // Draw matrix rectangles (cells)
+      svg.selectAll("rect")
+        .data(data)
+        .join("rect")
+        .attr("class", "cell-rect")
+        .attr("x", d=>margin.left + d.col*cellWidth)
+        .attr("y", d=>margin.top + d.row*cellHeight)
+        .attr("width", cellWidth)
+        .attr("height", cellHeight)
+        .attr("rx", 6)
+        .attr("ry", 6)
+        .attr("fill", d=>color(d.value));
+
+      // Cell text values (all cells, including 0)
+      svg.selectAll("text.cell-value")
+        .data(data)
+        .join("text")
+        .attr("class", "cell-text")
+        .attr("x", d=>margin.left + d.col*cellWidth + cellWidth/2)
+        .attr("y", d=>margin.top + d.row*cellHeight + cellHeight/2 + 6)
+        .attr("text-anchor", "middle")
+        .text(d=>d3.format(",")(d.value));
+
+      // Row labels (True class)
+      svg.selectAll("text.row-label")
+        .data(labels)
+        .join("text")
+        .attr("class", "axis-label")
+        .attr("x", margin.left-14)
+        .attr("y", (d,i)=>margin.top + i*cellHeight + cellHeight/2 + 8)
+        .attr("text-anchor", "end")
+        .text(d=>d);
+
+      // Column labels (Predicted class)
+      svg.selectAll("text.col-label")
+        .data(labels)
+        .join("text")
+        .attr("class", "axis-label")
+        .attr("x", (d,i)=>margin.left + i*cellWidth + cellWidth/2)
+        .attr("y", margin.top-20)
+        .attr("text-anchor", "middle")
+        .text(d=>d);
+
+      // Axis titles
+      svg.append("text")
+        .attr("class", "axis-label")
+        .attr("x", margin.left + n*cellWidth/2)
+        .attr("y", margin.top-47)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "1.17rem")
+        .attr("font-weight", 800)
+        .text("Predicted");
+
+      svg.append("text")
+        .attr("class", "axis-label")
+        .attr("x", margin.left-90)
+        .attr("y", margin.top + n*cellHeight/2 + 2)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "1.17rem")
+        .attr("font-weight", 800)
+        .attr("transform",`rotate(-90,${margin.left-90},${margin.top + n*cellHeight/2 + 2})`)
+        .text("True");
+
+      // Color bar (legend)
+      const colorbarHeight = 208, colorbarWidth = 14, colorbarX = width-55, colorbarY = margin.top+4;
+      const defs = svg.append("defs");
+      const gradient = defs.append("linearGradient")
+        .attr("id", "colorbar-gradient")
+        .attr("x1", "0%").attr("y1", "100%")
+        .attr("x2", "0%").attr("y2", "0%");
+      gradient.append("stop").attr("offset", "0%").attr("stop-color", color(0));
+      gradient.append("stop").attr("offset", "100%").attr("stop-color", color(maxValue));
+      svg.append("rect")
+        .attr("x", colorbarX)
+        .attr("y", colorbarY)
+        .attr("width", colorbarWidth)
+        .attr("height", colorbarHeight)
+        .style("fill", "url(#colorbar-gradient)");
+
+      // Color bar axis
+      const cbScale = d3.scaleLinear().domain([0,maxValue]).range([colorbarY+colorbarHeight, colorbarY]);
+      const cbAxis = d3.axisRight(cbScale)
+        .ticks(7)
+        .tickFormat(d3.format("~s"));
+      svg.append("g")
+        .attr("transform",`translate(${colorbarX+colorbarWidth+2},0)`)
+        .call(cbAxis)
+        .selectAll("text")
+        .attr("class", "colorbar-label");
+    });
+  </script>
+</body>
+</html>

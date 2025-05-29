@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spearman Correlation Matrix (Centered, Balanced)</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body { font-family: 'Inter', Arial, sans-serif; background: #fff; }
+    .heatmap-title {
+      font-size: 2.1rem; font-weight: 800;
+      text-align: center; margin-top: 24px; margin-bottom: 16px;
+      letter-spacing: -1px;
+    }
+    .cell-text { font-size: 1.16rem; font-weight: 700; pointer-events: none; }
+    .axis-label { font-size: 1.10rem; font-weight: 700; fill: #1d2735; }
+    .colorbar-label { font-size: 1rem; fill: #384458; text-anchor: end; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="heatmap-title">Spearman Correlation Matrix</div>
+  <div style="width:100%; display: flex; justify-content: center;">
+    <svg id="heatmap"></svg>
+  </div>
+  <script>
+    // ========== 1. DATA ==========
+
+    // Spearman correlation matrix values
+    const data = [
+      [1.00, -0.13, -0.06,  0.14, -0.19, -0.07, -0.03,  0.03],
+      [-0.13,  1.00, -0.11,  0.13,  0.02,  0.18, -0.13,  0.12],
+      [-0.06, -0.11,  1.00,  0.09,  0.06,  0.03,  0.04,  0.02],
+      [0.14, 0.13, 0.09, 1.00, 0.05, 0.14, -0.10, 0.14],
+      [-0.19, 0.02, 0.06, 0.05, 1.00, 0.09, -0.05, 0.07],
+      [-0.07, 0.18, 0.03, 0.14, 0.09, 1.00, -0.30, 0.62],
+      [-0.03, -0.13, 0.04, -0.10, -0.05, -0.30, 1.00, 0.13],
+      [0.03, 0.12, 0.02, 0.14, 0.07, 0.62, 0.13, 1.00]
+    ];
+
+    // Feature names (axes)
+    const features = [
+      "type_token_ratio",
+      "refrain_repetition_score",
+      "metaphor_density",
+      "avg_line_length",
+      "flesch_kincaid_grade",
+      "valence_lexicon",
+      "arousal_lexicon",
+      "dominance_lexicon"
+    ];
+
+    const n = features.length;
+    const cellSize = 66;
+
+    // Margins (top, left, right, bottom)
+    // Bottom margin is increased to allow x-labels to be fully visible
+    const margin = { top: 32, left: 220, right: 120, bottom: 110 };
+
+    // Color bar size
+    const colorbarW = 24, colorbarH = cellSize * n * 0.92;
+
+    // SVG dimensions (computed)
+    const width = margin.left + n * cellSize + margin.right;
+    const height = margin.top + n * cellSize + margin.bottom;
+
+    // ========== 2. SVG CONTAINER ==========
+
+    const svg = d3.select("#heatmap")
+      .attr("width", width)
+      .attr("height", height);
+
+    // ========== 3. COLOR SCALE ==========
+
+    // Diverging color: blue (negative), white (0), red (positive)
+    const color = d3.scaleLinear()
+      .domain([-1, 0, 1])
+      .range(["#3887C1", "#fff", "#C3272B"]);
+
+    // ========== 4. DRAW CELLS ==========
+
+    svg.selectAll("rect.cell")
+      .data(d3.cross(d3.range(n), d3.range(n)))
+      .join("rect")
+      .attr("x", ([i, j]) => margin.left + j * cellSize)
+      .attr("y", ([i, j]) => margin.top + i * cellSize)
+      .attr("width", cellSize-4)
+      .attr("height", cellSize-4)
+      .attr("rx", 13) // rounded corners
+      .attr("ry", 13)
+      .attr("fill", ([i, j]) => color(data[i][j]));
+
+    // ========== 5. CORRELATION TEXT ==========
+
+    svg.selectAll("text.cell-value")
+      .data(d3.cross(d3.range(n), d3.range(n)))
+      .join("text")
+      .attr("class", "cell-text")
+      .attr("x", ([i, j]) => margin.left + j * cellSize + (cellSize-4)/2)
+      .attr("y", ([i, j]) => margin.top + i * cellSize + (cellSize-4)/2 + 7)
+      .attr("text-anchor", "middle")
+      // White text for strong cells, black otherwise
+      .attr("fill", ([i, j]) => Math.abs(data[i][j]) > 0.62 ? "#fff" : "#222")
+      .attr("font-weight", d => Math.abs(data[d[0]][d[1]]) >= 0.98 ? 900 : 700)
+      .attr("font-size", d => Math.abs(data[d[0]][d[1]]) >= 0.98 ? "1.23rem" : "1.04rem")
+      .text(([i, j]) => data[i][j].toFixed(2));
+
+    // ========== 6. Y AXIS (row) LABELS ==========
+
+    svg.selectAll("text.row-label")
+      .data(features)
+      .join("text")
+      .attr("class", "axis-label")
+      .attr("x", margin.left - 18)
+      .attr("y", (d, i) => margin.top + i * cellSize + cellSize / 2 + 9)
+      .attr("text-anchor", "end")
+      .text(d => d);
+
+    // ========== 7. X AXIS (column) LABELS ==========
+
+    svg.selectAll("text.col-label")
+      .data(features)
+      .join("text")
+      .attr("class", "axis-label")
+      .attr("x", (d, i) => margin.left + i * cellSize + (cellSize-4)/2)
+      .attr("y", margin.top + n * cellSize + 48) // Move further down to ensure all visible
+      .attr("text-anchor", "end")
+      .attr("transform", (d, i) =>
+        `rotate(-30, ${margin.left + i * cellSize + (cellSize-4)/2}, ${margin.top + n * cellSize + 48})`
+      )
+      .text(d => d);
+
+    // ========== 8. COLOR BAR ==========
+
+    // Create gradient for color bar
+    const defs = svg.append("defs");
+    const gradient = defs.append("linearGradient")
+      .attr("id", "colorbar-gradient")
+      .attr("x1", "0%").attr("y1", "100%")
+      .attr("x2", "0%").attr("y2", "0%");
+    for (let i = 0; i <= 100; i++) {
+      gradient.append("stop")
+        .attr("offset", `${i}%`)
+        .attr("stop-color", color(-1 + 2 * i / 100));
+    }
+    svg.append("rect")
+      .attr("x", margin.left + n * cellSize + 36)
+      .attr("y", margin.top + cellSize * 0.18)
+      .attr("width", colorbarW)
+      .attr("height", colorbarH)
+      .style("fill", "url(#colorbar-gradient)");
+
+    // ========== 9. COLOR BAR AXIS ==========
+
+    // Color bar scale and axis
+    const cbScale = d3.scaleLinear()
+      .domain([-1, 1])
+      .range([margin.top + cellSize * 0.18 + colorbarH, margin.top + cellSize * 0.18]);
+    const cbAxis = d3.axisRight(cbScale).ticks(7).tickFormat(d3.format(".2f"));
+    svg.append("g")
+      .attr("transform", `translate(${margin.left + n * cellSize + 36 + colorbarW},0)`)
+      .call(cbAxis)
+      .selectAll("text")
+      .attr("class", "colorbar-label");
+
+    // ========== END ==========
+  </script>
+</body>
+</html>
