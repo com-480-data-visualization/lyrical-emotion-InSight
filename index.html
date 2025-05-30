@@ -14,8 +14,10 @@
     
     <!-- External stylesheet -->
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/tabs.css">
     
     <!-- JavaScript modules -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
     <script src="js/common.js" defer></script>
     <script src="js/modules/moduleA.js" defer></script>
     <script src="js/modules/moduleB.js" defer></script>
@@ -30,8 +32,8 @@
     <script src="js/modules/moduleEpisodeSigF.js" defer></script>
     <script src="js/modules/moduleEpisodeSigM.js" defer></script>
     <script src="js/modules/moduleSpearman.js" defer></script>
+    <script src="js/tabs.js" defer></script>
     <script src="js/main.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
 </head>
 <body>
     <div class="page-title">
@@ -39,331 +41,365 @@
         <p>an interactive exploration of how lyrics express emotions across languages and time</p>
     </div>
 
-    <!-- MODULE A: How lyrics have changed through the decades -->
-    <div class="section">
-        <div class="section-intro">
-            <h2>Historical Trends in Lyrical Tone (1950s--2010s)</h2>
-            <p>Percentage use of emotional and thematic word categories--negative sentiment, positive sentiment, neutral language, money, sex, and swear words--showing how lyrical tone has shifted across decades.</p>
-        </div>
-        
-        <div class="visualization-container module-a">
-            <div class="container">
-                <div class="header">
-                    <h1>Trends of Lyrical Tone </h1>
-                    <button class="replay-btn" id="replay">Replay</button>
-                    <svg class="music-notes" width="120" height="60">
-                        <!-- Music notes will be added with D3 -->
-                    </svg>
-                </div>
-                <div class="chart-area">
-                    <svg id="chart-a" width="100%" height="400"></svg>
-                    <div id="loading-a" class="loading">Loading data...</div>
-                </div>
-                <!-- <div class="footer">
-                    ✶ A Flourish chart
-                </div> -->
-            </div>
+    <!-- Tab Navigation -->
+    <div class="tab-navigation">
+        <div class="tab-container">
+            <button class="tab-button active" data-tab="main-page">Overview</button>
+            <button class="tab-button" data-tab="emotion-across-culture">Emotion Across Culture</button>
+            <button class="tab-button" data-tab="emotion-linguistics">Emotion & Linguistics</button>
         </div>
     </div>
 
-    <!-- MODULE C: Valence Trends Across Languages -->
-    <div class="section">
-        <div class="section-intro">
-            <h2>Emotional Dimensions and Trends in Lyrics by Language</h2>
-            <p>Each language's average valence (positivity), arousal (energy), and dominance (sense of control) as measured in song lyrics, alongside the regression coefficient of each emotion dimension over time. The trend coefficient is obtained via a linear regression of the yearly emotion scores, indicating the average annual increase or decrease in that emotional attribute.</p>
-        </div>
-        
-        <div class="visualization-container module-c">
-            <div class="container">
-                <div class="header">
-                    <h1>Emotional Profiles & Trends by Language</h1>
-                </div>
-                <div class="chart-controls">
-                    <div class="control-group">
-                        <label for="dataType">Data Type:</label>
-                        <select id="dataType">
-                            <option value="trend">Time Trends (Change Over Years)</option>
-                            <option value="mean">Average Values</option>
-                        </select>
-                    </div>
-                    <div class="control-group">
-                        <label for="emotionType">Emotion Dimension:</label>
-                        <select id="emotionType">
-                            <option value="valence">Valence</option>
-                            <option value="arousal">Arousal</option>
-                            <option value="dominance">Dominance</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="chart-area">
-                    <div id="loading-c" class="loading">Loading visualization...</div>
-                    <svg id="chart-c" width="100%" height="600"></svg>
-                </div>
-                <!-- <div class="footer">
-                    Data visualization created with D3.js | Source: Global Lyrics Database
-                </div> -->
-            </div>
-        </div>
-    </div>
-
-    <!-- MODULE E: Valence & Arousal Relationship Across Languages -->
-    <div class="section">
-        <div class="section-intro">
-            <h2>Valence--Arousal Profiles of Song Lyrics Across Languages</h2>
-            <p>Each point represents a language's average valence (positivity) and arousal (energy/intensity) scores, placing languages in a two‑dimensional emotional space for cross‑cultural comparison.</p>
-        </div>
-        
-        <div class="visualization-container module-e">
-            <div class="container">
-
-                <div class="chart-container">
-                    <div id="scatter-plot"></div>
+    <!-- Tab Content Containers -->
+    <div class="tab-content">
+        <!-- Main Page Tab -->
+        <div id="main-page" class="tab-pane active">
+            <div class="overview-content">
+                <div class="overview-section">
+                    <h2>Project Overview</h2>
+                    <p>This research project explores how emotions are expressed in song lyrics across different languages and cultures. Using computational analysis and data visualization, we examine patterns in emotional expression, linguistic features, and structural elements of lyrics from around the world.</p>
+                    
+                    <p>Our interactive visualizations allow you to explore:</p>
+                    <ul>
+                        <li>How lyrical tone has changed over time across different languages</li>
+                        <li>The relationship between linguistic structure and emotional expression</li>
+                        <li>Cross-cultural patterns in how emotions are conveyed through lyrics</li>
+                        <li>The correlation between different emotional dimensions in various languages</li>
+                    </ul>
                 </div>
                 
-                <div class="selector-container">
-                    <label for="dimension-select">Select dimension for bar chart:</label>
-                    <select id="dimension-select">
-                        <option value="valence_mean">Valence (Positivity)</option>
-                        <option value="arousal_mean">Arousal (Intensity)</option>
-                    </select>
-                </div>
-                
-                <div class="chart-container">
-                    <h2 id="bar-chart-title">Average Valence Across Languages</h2>
-                    <div id="bar-chart"></div>
-                </div>
-                
-                <!-- <div class="footer">
-                    ✶ Data visualization powered by D3.js
-                </div> -->
-            </div>
-        </div>
-    </div>
-
-    <!-- MODULE B: Lyrical Emotion Trends by Language -->
-    <div class="section">
-        <div class="section-intro">
-            <h2>Temporal Emotion Trends Within Languages</h2>
-            <p>This visualization allows for an in-depth look at how emotional expression has evolved over time within specific languages. By selecting a language and an emotional dimension, you can observe detailed trends in how that linguistic community has expressed emotions through music across decades.</p>
-        </div>
-        
-        <div class="visualization-container module-b">
-            <div class="container">
-                <!-- <header>
-                    <h1>Lyrical Emotion Trends by Language</h1>
-                    <div class="subtitle">Explore how emotions in lyrics have changed over time for each language</div>
-                </header> -->
-                
-                <div class="controls">
-                    <div class="control-group">
-                        <label for="language-select">Language</label>
-                        <select id="language-select">
-                            <option value="">Select a language</option>
-                        </select>
-                    </div>
-                    <div class="control-group">
-                        <label for="emotion-select">Emotion Metric</label>
-                        <select id="emotion-select" disabled>
-                            <option value="">Select an emotion metric</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="chart-container">
-                    <div id="chart-area">
-                        <div class="no-data">
-                            <div class="no-data-icon">📊</div>
-                            <h3>Select a language and emotion metric to get started</h3>
-                            <p>You'll see how that emotional attribute in lyrics has changed over time.</p>
+                <div class="overview-section">
+                    <h2>Explore Our Visualizations</h2>
+                    <div class="tab-cards">
+                        <div class="tab-card" onclick="switchToTab('emotion-across-culture')">
+                            <h3>Emotion Across Culture</h3>
+                            <p>Explore how emotional expression in lyrics varies across different languages and cultures, including historical trends, valence-arousal profiles, and cross-linguistic comparisons.</p>
+                            <div class="card-button">View Visualizations</div>
+                        </div>
+                        <div class="tab-card" onclick="switchToTab('emotion-linguistics')">
+                            <h3>Emotion & Linguistics</h3>
+                            <p>Examine the relationship between linguistic features and emotional expression, including structural patterns, emotional episode analysis, and feature correlations.</p>
+                            <div class="card-button">View Visualizations</div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- <div class="footer">
-                    Data source: Lyrical emotion trends dataset | Visualization created with D3.js
-                </div> -->
-            </div>
-        </div>
-    </div>
-
-    <!-- MODULE D: KMeans Cluster to Episode - Sankey Diagram -->
-    <div class="section">
-        <div class="section-intro">
-            <h2>Clustering Analysis: Mapping Structural Patterns to Emotional Episodes</h2>
-            <p>This Sankey diagram presents a fascinating bridge between lyrics structure and emotion. Using K-means clustering on lyrical structures, we identify patterns that map to emotional episodes (EDR, CB, PEP). The diagram displays how structure clusters correspond to recognizable emotional states.</p>
-        </div>
-        
-        <div class="visualization-container module-d">
-            <div class="container">
-                <!-- <div class="header">
-                    <h1 class="title">KMeans Cluster to Episode - Sankey Diagram</h1>
-                </div> -->
-                <div class="chart-area">
-                    <svg id="sankey" width="960" height="530"></svg>
-                </div>
-                <!-- <div class="footer">
-                    Data visualization by D3.js
-                </div> -->
-            </div>
-            
-            <div class="tooltip" id="tooltip-d"></div>
-        </div>
-    </div>
-
-
-    <!-- MODULE VAD: Lexicon-Based VAD Correlation Matrix -->
-    <div class="section">
-        <div class="section-intro">
-            <h2>Lexicon-Based VAD Correlation Matrix</h2>
-            <p>This heatmap visualizes the correlation between different Valence, Arousal, and Dominance (VAD) lexicons across languages, highlighting similarities and differences in how emotional dimensions are captured in various linguistic resources.</p>
-        </div>
-        
-        <div class="visualization-container module-vad">
-            <div class="container">
-                <div class="header">
-                    <h1>VAD Lexicon Correlation Analysis</h1>
-                </div>
-                <div class="chart-area">
-                    <div id="loading-vad" class="loading">Loading visualization...</div>
-                    <svg id="vad-heatmap" width="100%" height="700"></svg>
+                <div class="overview-section">
+                    <h2>Research Background</h2>
+                    <p>Our research builds on a growing body of work in affective computing, computational linguistics, and musicology. We apply natural language processing techniques to analyze lyrics from multiple languages, examining how different cultures encode emotions in their musical expressions.</p>
+                    
+                    <p>Key research questions include:</p>
+                    <ul>
+                        <li>How do emotional expressions in lyrics differ across languages?</li>
+                        <li>What temporal trends can be observed in emotional tone across decades?</li>
+                        <li>How do linguistic structures correlate with emotional states?</li>
+                        <li>Can we identify universal patterns in how emotions are expressed in lyrics?</li>
+                    </ul>
                 </div>
             </div>
         </div>
-    </div>
 
-
-    <!-- MODULE UMAP: UMAP Clustering Comparison -->
-    <div class="section">
-        <div class="section-intro">
-            <h2>UMAP Clustering: Visualizing Lyrical Structure and Emotional Episodes</h2>
-            <p>This visualization uses UMAP (Uniform Manifold Approximation and Projection) to represent high-dimensional lyrical data in a 2D space. The left plot shows data points colored by KMeans clusters, while the right plot shows the same points colored by their dominant emotional episodes, revealing patterns in how structural clusters relate to emotional content.</p>
-        </div>
-        
-        <div class="visualization-container module-umap">
-            <div class="horizontal-container">
-                <div class="plot-card">
-                    <div class="plot-title">UMAP Projection Colored by KMeans Cluster</div>
-                    <svg id="umap-kmeans" width="520" height="480"></svg>
-                    <div class="legend" id="legend-kmeans"></div>
-                    <div class="data-note" id="note-kmeans"></div>
+        <!-- Emotion Across Culture Tab -->
+        <div id="emotion-across-culture" class="tab-pane">
+            <!-- MODULE A: How lyrics have changed through the decades -->
+            <div class="section">
+                <div class="section-intro">
+                    <h2>Historical Trends in Lyrical Tone (1950s--2010s)</h2>
+                    <p>Percentage use of emotional and thematic word categories--negative sentiment, positive sentiment, neutral language, money, sex, and swear words--showing how lyrical tone has shifted across decades.</p>
                 </div>
-                <div class="plot-card">
-                    <div class="plot-title">UMAP of Lyrics Colored by Dominant Episode</div>
-                    <svg id="umap-episode" width="520" height="480"></svg>
-                    <div class="legend" id="legend-episode"></div>
-                    <div class="data-note" id="note-episode"></div>
+                
+                <div class="visualization-container module-a">
+                    <div class="container">
+                        <div class="header">
+                            <h1>Trends of Lyrical Tone </h1>
+                            <button class="replay-btn" id="replay">Replay</button>
+                            <svg class="music-notes" width="120" height="60">
+                                <!-- Music notes will be added with D3 -->
+                            </svg>
+                        </div>
+                        <div class="chart-area">
+                            <svg id="chart-a" width="100%" height="400"></svg>
+                            <div id="loading-a" class="loading">Loading data...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE C: Valence Trends Across Languages -->
+            <div class="section">
+                <div class="section-intro">
+                    <h2>Emotional Dimensions and Trends in Lyrics by Language</h2>
+                    <p>Each language's average valence (positivity), arousal (energy), and dominance (sense of control) as measured in song lyrics, alongside the regression coefficient of each emotion dimension over time. The trend coefficient is obtained via a linear regression of the yearly emotion scores, indicating the average annual increase or decrease in that emotional attribute.</p>
+                </div>
+                
+                <div class="visualization-container module-c">
+                    <div class="container">
+                        <div class="header">
+                            <h1>Emotional Profiles & Trends by Language</h1>
+                        </div>
+                        <div class="chart-controls">
+                            <div class="control-group">
+                                <label for="dataType">Data Type:</label>
+                                <select id="dataType">
+                                    <option value="trend">Time Trends (Change Over Years)</option>
+                                    <option value="mean">Average Values</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label for="emotionType">Emotion Dimension:</label>
+                                <select id="emotionType">
+                                    <option value="valence">Valence</option>
+                                    <option value="arousal">Arousal</option>
+                                    <option value="dominance">Dominance</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-area">
+                            <div id="loading-c" class="loading">Loading visualization...</div>
+                            <svg id="chart-c" width="100%" height="600"></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE E: Valence & Arousal Relationship Across Languages -->
+            <div class="section">
+                <div class="section-intro">
+                    <h2>Valence--Arousal Profiles of Song Lyrics Across Languages</h2>
+                    <p>Each point represents a language's average valence (positivity) and arousal (energy/intensity) scores, placing languages in a two‑dimensional emotional space for cross‑cultural comparison.</p>
+                </div>
+                
+                <div class="visualization-container module-e">
+                    <div class="container">
+                        <div class="chart-container">
+                            <div id="scatter-plot"></div>
+                        </div>
+                        
+                        <div class="selector-container">
+                            <label for="dimension-select">Select dimension for bar chart:</label>
+                            <select id="dimension-select">
+                                <option value="valence_mean">Valence (Positivity)</option>
+                                <option value="arousal_mean">Arousal (Intensity)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h2 id="bar-chart-title">Average Valence Across Languages</h2>
+                            <div id="bar-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE B: Lyrical Emotion Trends by Language -->
+            <div class="section">
+                <div class="section-intro">
+                    <h2>Temporal Emotion Trends Within Languages</h2>
+                    <p>This visualization allows for an in-depth look at how emotional expression has evolved over time within specific languages. By selecting a language and an emotional dimension, you can observe detailed trends in how that linguistic community has expressed emotions through music across decades.</p>
+                </div>
+                
+                <div class="visualization-container module-b">
+                    <div class="container">
+                        <div class="controls">
+                            <div class="control-group">
+                                <label for="language-select">Language</label>
+                                <select id="language-select">
+                                    <option value="">Select a language</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label for="emotion-select">Emotion Metric</label>
+                                <select id="emotion-select" disabled>
+                                    <option value="">Select an emotion metric</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <div id="chart-area">
+                                <div class="no-data">
+                                    <div class="no-data-icon">📊</div>
+                                    <h3>Select a language and emotion metric to get started</h3>
+                                    <p>You'll see how that emotional attribute in lyrics has changed over time.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE D: KMeans Cluster to Episode - Sankey Diagram -->
+            <div class="section">
+                <div class="section-intro">
+                    <h2>Clustering Analysis: Mapping Structural Patterns to Emotional Episodes</h2>
+                    <p>This Sankey diagram presents a fascinating bridge between lyrics structure and emotion. Using K-means clustering on lyrical structures, we identify patterns that map to emotional episodes (EDR, CB, PEP). The diagram displays how structure clusters correspond to recognizable emotional states.</p>
+                </div>
+                
+                <div class="visualization-container module-d">
+                    <div class="container">
+                        <div class="chart-area">
+                            <svg id="sankey" width="960" height="530"></svg>
+                        </div>
+                    </div>
+                    
+                    <div class="tooltip" id="tooltip-d"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emotion & Linguistics Tab -->
+        <div id="emotion-linguistics" class="tab-pane">
+            <!-- MODULE VAD: Lexicon-Based VAD Correlation Matrix -->
+            <div class="section">
+                <div class="section-intro">
+                    <h2>Lexicon-Based VAD Correlation Matrix</h2>
+                    <p>This heatmap visualizes the correlation between different Valence, Arousal, and Dominance (VAD) lexicons across languages, highlighting similarities and differences in how emotional dimensions are captured in various linguistic resources.</p>
+                </div>
+                
+                <div class="visualization-container module-vad">
+                    <div class="container">
+                        <div class="header">
+                            <h1>VAD Lexicon Correlation Analysis</h1>
+                        </div>
+                        <div class="chart-area">
+                            <div id="loading-vad" class="loading">Loading visualization...</div>
+                            <svg id="vad-heatmap" width="100%" height="700"></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE UMAP: UMAP Clustering Comparison -->
+            <div class="section">
+                <div class="section-intro">
+                    <h2>UMAP Clustering: Visualizing Lyrical Structure and Emotional Episodes</h2>
+                    <p>This visualization uses UMAP (Uniform Manifold Approximation and Projection) to represent high-dimensional lyrical data in a 2D space. The left plot shows data points colored by KMeans clusters, while the right plot shows the same points colored by their dominant emotional episodes, revealing patterns in how structural clusters relate to emotional content.</p>
+                </div>
+                
+                <div class="visualization-container module-umap">
+                    <div class="horizontal-container">
+                        <div class="plot-card">
+                            <div class="plot-title">UMAP Projection Colored by KMeans Cluster</div>
+                            <svg id="umap-kmeans" width="520" height="480"></svg>
+                            <div class="legend" id="legend-kmeans"></div>
+                            <div class="data-note" id="note-kmeans"></div>
+                        </div>
+                        <div class="plot-card">
+                            <div class="plot-title">UMAP of Lyrics Colored by Dominant Episode</div>
+                            <svg id="umap-episode" width="520" height="480"></svg>
+                            <div class="legend" id="legend-episode"></div>
+                            <div class="data-note" id="note-episode"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE CMATRIX: Confusion Matrix (VAD → Episode) -->
+            <div class="section">
+                <div class="section-intro">
+                    <h2>Confusion Matrix: VAD to Episode Classification</h2>
+                    <p>This visualization shows the relationship between Valence-Arousal-Dominance (VAD) values and emotional episode classifications. The matrix displays how accurately VAD values predict different emotional episodes, highlighting patterns of confusion between similar emotional states.</p>
+                </div>
+                
+                <div class="visualization-container module-cmatrix">
+                    <div class="container">
+                        <div class="header">
+                            <h1>Confusion Matrix (VAD → Episode)</h1>
+                        </div>
+                        <div class="chart-area">
+                            <div id="confusion-matrix-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE STRUCT-E: Correlation Between Structural and Emotional Features -->
+            <div class="section">
+                <div class="section-intro">
+                    <h2>Correlation Between Structural and Emotional Features</h2>
+                    <p>This visualization explores the relationships between lyrical structure (verse length, rhyme patterns, repetition) and emotional dimensions. The heatmap reveals how formal aspects of lyrics correlate with the emotions they express, offering insights into how lyrical form shapes emotional impact.</p>
+                </div>
+                
+                <div class="visualization-container module-structe">
+                    <div class="container">
+                        <div class="chart-area">
+                            <div id="heatmap-container"></div>
+                            <div id="tooltip-structe" class="tooltip"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE EPISODE-S: Episode Signature Features -->
+            <div class="section">
+                <div class="section-intro">
+                    <h2>Emotional Episode Signature Features</h2>
+                    <p>This visualization displays the signature features of different emotional episodes (EDR, CB, PEP). Each bar represents the relative strength of a selected feature across emotional episode types, helping identify the distinctive characteristics of each episode.</p>
+                </div>
+                
+                <div class="visualization-container module-episode">
+                    <div class="container">
+                        <div class="header">
+                            <h1>Episode Signature Features</h1>
+                        </div>
+                        <div id="episode-chart-container" class="chart-area">
+                            <div id="loading-episode" class="loading">Loading episode data...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE EPISODE SIGNATURE: Linguistic Feature Comparison -->
+            <div class="section">
+                <div class="section-intro">
+                    <h2>Linguistic Signatures of Emotional Episodes</h2>
+                    <p>This visualization compares distinctive linguistic features across different emotional episode categories, revealing how specific language patterns characterize each emotional state.</p>
+                </div>
+                
+                <div class="visualization-container module-episode-signature">
+                    <div class="container" id="episode-signature-container">
+                        <div class="header">
+                            <h1>Episode Signature Feature Comparison</h1>
+                        </div>
+                        <div id="episode-signature-controls" class="chart-controls"></div>
+                        <div class="chart-area">
+                            <div id="episode-signature-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE Episode Signature: Feature Signatures Across Episodes -->
+            <div class="section">
+                <div class="section-intro">
+                    <h2>Feature Signatures Across Emotional Episodes</h2>
+                    <p>This visualization compares linguistic and structural features across different emotional episodes in lyrics. Each bar represents the average value of a specific feature (such as metaphor density or pronoun usage) for each emotional episode category.</p>
+                </div>
+                
+                <div class="visualization-container module-episode-sig">
+                    <div class="container">
+                        <div class="chart-area">
+                            <div id="episode-signature-chartM"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE SPEARMAN: Feature Correlation Matrix -->
+            <div class="section">
+                <div class="section-intro">
+                    <h2>Lyrical Feature Correlations</h2>
+                    <p>This visualization presents the Spearman rank correlation coefficients between different lyrical features. The heatmap reveals relationships between structural elements (like repetition and metaphor density) and emotional dimensions (valence, arousal, and dominance), helping identify which features tend to occur together in lyrics.</p>
+                </div>
+                
+                <div class="visualization-container module-spearman">
+                    <div class="container">
+                        <div id="spearman-viz"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- MODULE CMATRIX: Confusion Matrix (VAD → Episode) -->
-    <div class="section">
-        <div class="section-intro">
-            <h2>Confusion Matrix: VAD to Episode Classification</h2>
-            <p>This visualization shows the relationship between Valence-Arousal-Dominance (VAD) values and emotional episode classifications. The matrix displays how accurately VAD values predict different emotional episodes, highlighting patterns of confusion between similar emotional states.</p>
-        </div>
-        
-        <div class="visualization-container module-cmatrix">
-            <div class="container">
-                <div class="header">
-                    <h1>Confusion Matrix (VAD → Episode)</h1>
-                </div>
-                <div class="chart-area">
-                    <div id="confusion-matrix-container"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- MODULE STRUCT-E: Correlation Between Structural and Emotional Features -->
-    <div class="section">
-        <div class="section-intro">
-            <h2>Correlation Between Structural and Emotional Features</h2>
-            <p>This visualization explores the relationships between lyrical structure (verse length, rhyme patterns, repetition) and emotional dimensions. The heatmap reveals how formal aspects of lyrics correlate with the emotions they express, offering insights into how lyrical form shapes emotional impact.</p>
-        </div>
-        
-        <div class="visualization-container module-structe">
-            <div class="container">
-                <div class="chart-area">
-                    <div id="heatmap-container"></div>
-                    <div id="tooltip-structe" class="tooltip"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODULE EPISODE-S: Episode Signature Features -->
-    <div class="section">
-        <div class="section-intro">
-            <h2>Emotional Episode Signature Features</h2>
-            <p>This visualization displays the signature features of different emotional episodes (EDR, CB, PEP). Each bar represents the relative strength of a selected feature across emotional episode types, helping identify the distinctive characteristics of each episode.</p>
-        </div>
-        
-        <div class="visualization-container module-episode">
-            <div class="container">
-                <div class="header">
-                    <h1>Episode Signature Features</h1>
-                </div>
-                <div id="episode-chart-container" class="chart-area">
-                    <div id="loading-episode" class="loading">Loading episode data...</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODULE EPISODE SIGNATURE: Linguistic Feature Comparison -->
-    <div class="section">
-        <div class="section-intro">
-            <h2>Linguistic Signatures of Emotional Episodes</h2>
-            <p>This visualization compares distinctive linguistic features across different emotional episode categories, revealing how specific language patterns characterize each emotional state.</p>
-        </div>
-        
-        <div class="visualization-container module-episode-signature">
-            <div class="container" id="episode-signature-container">
-                <div class="header">
-                    <h1>Episode Signature Feature Comparison</h1>
-                </div>
-                <div id="episode-signature-controls" class="chart-controls"></div>
-                <div class="chart-area">
-                    <div id="episode-signature-chart"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- MODULE Episode Signature: Feature Signatures Across Episodes -->
-    <div class="section">
-        <div class="section-intro">
-            <h2>Feature Signatures Across Emotional Episodes</h2>
-            <p>This visualization compares linguistic and structural features across different emotional episodes in lyrics. Each bar represents the average value of a specific feature (such as metaphor density or pronoun usage) for each emotional episode category.</p>
-        </div>
-        
-        <div class="visualization-container module-episode-sig">
-            <div class="container">
-                <div class="chart-area">
-                    <div id="episode-signature-chartM"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODULE SPEARMAN: Feature Correlation Matrix -->
-    <div class="section">
-        <div class="section-intro">
-            <h2>Lyrical Feature Correlations</h2>
-            <p>This visualization presents the Spearman rank correlation coefficients between different lyrical features. The heatmap reveals relationships between structural elements (like repetition and metaphor density) and emotional dimensions (valence, arousal, and dominance), helping identify which features tend to occur together in lyrics.</p>
-        </div>
-        
-        <div class="visualization-container module-spearman">
-            <div class="container">
-                <div id="spearman-viz"></div>
-            </div>
-        </div>
-    </div>
-
 
     <div class="footer">
         <p>© 2025 Lyrical Emotion Analysis Project</p>

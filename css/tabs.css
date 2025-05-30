@@ -1,0 +1,165 @@
+/* Tab Navigation Styles */
+.tab-navigation {
+    width: 100%;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.tab-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    padding: 0 1rem;
+}
+
+.tab-button {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #495057;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+    font-family: 'Roboto', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+.tab-button:hover {
+    color: #212529;
+    border-bottom-color: #adb5bd;
+}
+
+.tab-button.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+    font-weight: 600;
+}
+
+/* Tab Content Styles */
+.tab-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.tab-pane {
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Overview Page Styles */
+.overview-content {
+    padding: 2rem 0;
+}
+
+.overview-section {
+    margin-bottom: 3rem;
+}
+
+.overview-section h2 {
+    color: #343a40;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 0.5rem;
+}
+
+.overview-section p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #495057;
+    margin-bottom: 1.5rem;
+}
+
+.overview-section ul {
+    padding-left: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.overview-section li {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+    color: #495057;
+}
+
+.tab-cards {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+.tab-card {
+    flex: 1;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.tab-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+.tab-card h3 {
+    color: #343a40;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.tab-card p {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+}
+
+.card-button {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.card-button:hover {
+    background-color: #0069d9;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .tab-cards {
+        flex-direction: column;
+    }
+    
+    .tab-container {
+        flex-wrap: wrap;
+    }
+    
+    .tab-button {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+}

@@ -16,6 +16,7 @@
 // Define main functionality as a module
 // MODIFIED: Changed from self-executing function to regular function
 function initModuleA() {
+    cleanupModuleA();
     // Define the dataset with sample data
     const dataset = {
         loveWords: [
@@ -470,14 +471,29 @@ function initModuleA() {
         });
     }
     
-    // Call loadData to initialize the visualization
-    // MODIFIED: Moved from DOMContentLoaded to init function
-    loadData();
+    // // Call loadData to initialize the visualization
+    // // MODIFIED: Moved from DOMContentLoaded to init function
+    // loadData();
 
-    // Add replay button functionality
-    document.getElementById("replay").addEventListener("click", () => {
-        loadData();
-    });
+    // // Add replay button functionality
+    // document.getElementById("replay").addEventListener("click", () => {
+    //     loadData();
+    // });
+    // 重要：确保 replay 按钮的事件监听器只添加一次
+    const replayButton = document.getElementById("replay");
+    if (replayButton) {
+        // 移除所有现有事件监听器
+        const newButton = replayButton.cloneNode(true);
+        replayButton.parentNode.replaceChild(newButton, replayButton);
+        
+        // 添加新的事件监听器
+        newButton.addEventListener("click", () => {
+            loadData();
+        });
+    }
+    
+    // 立即加载数据并启动动画
+    loadData();
 }
 
 /**

@@ -16,21 +16,30 @@ function handleGlobalResize() {
     // Debounce the resize event to prevent excessive redraws
     clearTimeout(window.globalResizeTimer);
     window.globalResizeTimer = setTimeout(() => {
-        // Trigger resize handlers for each module
-        if (typeof handleModuleAResize === 'function') handleModuleAResize();
-        if (typeof handleModuleBResize === 'function') handleModuleBResize();
-        if (typeof handleModuleCResize === 'function') handleModuleCResize();
-        if (typeof handleModuleDResize === 'function') handleModuleDResize();
-        if (typeof handleModuleEResize === 'function') handleModuleEResize();
-        if (typeof handleModuleVADResize === 'function') handleModuleVADResize();
-        if (typeof handleModuleUmapResize === 'function') handleModuleUmapResize();
-        if (typeof handleModuleCMatrixResize === 'function') handleModuleCMatrixResize();
-        if (typeof handleModuleStructEResize === 'function') handleModuleStructEResize();
-        if (typeof handleModuleEpisodeSResize === 'function') handleModuleEpisodeSResize();
-        if (typeof handleModuleEpisodeSigFResize === 'function') handleModuleEpisodeSigFResize();
-        if (typeof handleModuleEpisodeSigMResize === 'function') handleModuleEpisodeSigMResize();
-        if (typeof handleModuleSpearmanResize === 'function') handleModuleSpearmanResize();
-
+        // Only initialize modules for the active tab
+        const activeTab = document.querySelector('.tab-pane.active');
+        if (!activeTab) return;
+        
+        const tabId = activeTab.id;
+        
+        // Initialize modules based on active tab
+        if (tabId === 'emotion-across-culture') {
+            if (typeof handleModuleAResize === 'function') handleModuleAResize();
+            if (typeof handleModuleBResize === 'function') handleModuleBResize();
+            if (typeof handleModuleCResize === 'function') handleModuleCResize();
+            if (typeof handleModuleDResize === 'function') handleModuleDResize();
+            if (typeof handleModuleEResize === 'function') handleModuleEResize();
+        } 
+        else if (tabId === 'emotion-linguistics') {
+            if (typeof handleModuleVADResize === 'function') handleModuleVADResize();
+            if (typeof handleModuleUmapResize === 'function') handleModuleUmapResize();
+            if (typeof handleModuleCMatrixResize === 'function') handleModuleCMatrixResize();
+            if (typeof handleModuleStructEResize === 'function') handleModuleStructEResize();
+            if (typeof handleModuleEpisodeSResize === 'function') handleModuleEpisodeSResize();
+            if (typeof handleModuleEpisodeSigFResize === 'function') handleModuleEpisodeSigFResize();
+            if (typeof handleModuleEpisodeSigMResize === 'function') handleModuleEpisodeSigMResize();
+            if (typeof handleModuleSpearmanResize === 'function') handleModuleSpearmanResize();
+        }
     }, 300);
 }
 
@@ -47,12 +56,15 @@ const formatPercent = d3.format(".1%");
  */
 function handleDataError(moduleId, error) {
     console.error(`Error loading data for module ${moduleId}:`, error);
-    document.getElementById(`loading-${moduleId}`).innerHTML = `
-        <div class="error-message">
-            <strong>Error loading data</strong>
-            <p>Please check console for details.</p>
-        </div>
-    `;
+    const loadingElement = document.getElementById(`loading-${moduleId}`);
+    if (loadingElement) {
+        loadingElement.innerHTML = `
+            <div class="error-message">
+                <strong>Error loading data</strong>
+                <p>Please check console for details.</p>
+            </div>
+        `;
+    }
 }
 
 /**
@@ -70,11 +82,27 @@ const dataPathHelpers = {
     }
 };
 
+/**
+ * Check if an element is in the viewport
+ * @param {HTMLElement} element - The element to check
+ * @returns {boolean} - Whether the element is in the viewport
+ */
+function isElementInViewport(element) {
+    const rect = element.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+}
+
 // Export the utilities so they're available to other modules
 window.vizUtils = {
     tooltip: sharedTooltip,
     formatNumber: formatNumber,
     formatPercent: formatPercent,
     handleDataError: handleDataError,
-    dataPath: dataPathHelpers
+    dataPath: dataPathHelpers,
+    isElementInViewport: isElementInViewport
 };

@@ -6,62 +6,22 @@
  * valence and arousal across different languages, along with a companion bar chart.
  */
 
-// --- MODIFIED: Wrapped original self-executing function as a named function ---
+// Global variables to store data and dimensions (accessible within the module scope)
+let moduleEData = null;
+let moduleESampleData = null;
+let scatterSvg = null;
+let barSvg = null;
+let colorScale = null;
+
+// --- Main initialization function ---
 function initModuleE() {
-    // Scatter plot dimensions
-    const scatterMargin = {top: 40, right: 100, bottom: 60, left: 60};
-    const scatterWidth = 850 - scatterMargin.left - scatterMargin.right;
-    const scatterHeight = 450 - scatterMargin.top - scatterMargin.bottom;
+    console.log("Initializing Module E (Valence-Arousal Profiles)");
     
-    // Bar chart dimensions
-    const barMargin = {top: 20, right: 30, bottom: 100, left: 60};
-    const barWidth = 850 - barMargin.left - barMargin.right;
-    const barHeight = 350 - barMargin.top - barMargin.bottom;
+    // First, clean up any existing visualizations
+    cleanupModuleE();
     
-    // --- MODIFIED: Using querySelector to ensure we're working with empty containers ---
-    // Clear previous SVGs if they exist
-    // document.querySelector("#scatter-plot").innerHTML = "";
-    // document.querySelector("#bar-chart").innerHTML = "";
-    
-    // Create SVG for scatter plot
-    const scatterSvg = d3.select("#scatter-plot")
-      .append("svg")
-        .attr("width", scatterWidth + scatterMargin.left + scatterMargin.right)
-        .attr("height", scatterHeight + scatterMargin.top + scatterMargin.bottom)
-      .append("g")
-        .attr("transform", `translate(${scatterMargin.left},${scatterMargin.top})`);
-    
-    // Create SVG for bar chart
-    const barSvg = d3.select("#bar-chart")
-      .append("svg")
-        .attr("width", barWidth + barMargin.left + barMargin.right)
-        .attr("height", barHeight + barMargin.top + barMargin.bottom)
-      .append("g")
-        .attr("transform", `translate(${barMargin.left},${barMargin.top})`);
-    
-    // Custom color scheme with softer, more harmonious colors
-    const colorScheme = [
-      "#4e79a7", "#f28e2c", "#e15759", "#76b7b2", "#59a14f",
-      "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ab",
-      "#6b9ac4", "#d67553", "#87c293", "#b279a2", "#808080",
-      "#9d7660", "#d3a294", "#a2d6a2", "#e98d6b", "#b57aa3",
-      "#85a9c7", "#e49757", "#7abfb5", "#f1a2a5", "#b9b07d"
-    ];
-    
-    // Create scales
-    const scatterX = d3.scaleLinear().range([0, scatterWidth]);
-    const scatterY = d3.scaleLinear().range([scatterHeight, 0]);
-    const barX = d3.scaleBand().range([0, barWidth]).padding(0.2);
-    const barY = d3.scaleLinear().range([barHeight, 0]);
-    const color = d3.scaleOrdinal().range(colorScheme);
-    
-    // --- MODIFIED: Use the shared tooltip from common.js instead of creating a new one ---
-    const tooltipE = window.vizUtils ? window.vizUtils.tooltip : d3.select("body").append("div")
-      .attr("class", "tooltip")
-      .style("opacity", 0);
-    
-    // Sample data for development (will be replaced with actual data)
-    const sampleData = [
+    // Initialize sample data (fallback if data loading fails)
+    moduleESampleData = [
         { language: "english", valence_mean: 0.17, arousal_mean: 0.21 },
         { language: "spanish", valence_mean: 0.19, arousal_mean: 0.17 },
         { language: "french", valence_mean: 0.22, arousal_mean: 0.15 },
@@ -100,343 +60,468 @@ function initModuleE() {
         { language: "hausa", valence_mean: 0.16, arousal_mean: 0.10 }
     ];
     
-    // --- MODIFIED: Updated the file path to use the dataPath utility ---
+    // Create color scale with consistent colors
+    colorScale = d3.scaleOrdinal().range([
+        "#4e79a7", "#f28e2c", "#e15759", "#76b7b2", "#59a14f",
+        "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ab",
+        "#6b9ac4", "#d67553", "#87c293", "#b279a2", "#808080",
+        "#9d7660", "#d3a294", "#a2d6a2", "#e98d6b", "#b57aa3",
+        "#85a9c7", "#e49757", "#7abfb5", "#f1a2a5", "#b9b07d"
+    ]);
+    
+    // Initialize the dimension select dropdown event listener
+    setupDimensionSelectListener();
+    
     // Load data and create visualizations
+    loadModuleEData();
+}
+
+/**
+ * Cleans up Module E visualizations
+ */
+function cleanupModuleE() {
+    // Clear SVG containers
+    document.querySelector("#scatter-plot").innerHTML = "";
+    document.querySelector("#bar-chart").innerHTML = "";
+    
+    // Reset the title to default
+    const barChartTitle = document.getElementById("bar-chart-title");
+    if (barChartTitle) {
+        barChartTitle.textContent = "Average Valence Across Languages";
+    }
+    
+    // Reset dropdown to default value
+    const dimensionSelect = document.getElementById("dimension-select");
+    if (dimensionSelect) {
+        dimensionSelect.value = "valence_mean";
+    }
+    
+    console.log("Module E cleanup completed");
+}
+
+/**
+ * Sets up the dimension select dropdown event listener
+ */
+function setupDimensionSelectListener() {
+    const dimensionSelect = document.getElementById("dimension-select");
+    if (dimensionSelect) {
+        // Remove any existing event listeners by cloning the element
+        const newSelect = dimensionSelect.cloneNode(true);
+        dimensionSelect.parentNode.replaceChild(newSelect, dimensionSelect);
+        
+        // Add the event listener to the new element
+        newSelect.addEventListener("change", function() {
+            const dimension = this.value;
+            updateModuleEBarChart(dimension);
+        });
+        
+        console.log("Module E dimension select listener set up");
+    }
+}
+
+/**
+ * Loads data for Module E
+ */
+function loadModuleEData() {
+    // Get data path
     const dataPath = window.vizUtils && window.vizUtils.dataPath ? 
         window.vizUtils.dataPath.getPath('', 'lang_emotion.json') : 
-        'lang_emotion.json';
-        
-    d3.json(dataPath).then(data => {
-        // Set domains for scales
-        scatterX.domain([0.08, d3.max(data, d => d.valence_mean) * 1.05]);
-        scatterY.domain([0, d3.max(data, d => d.arousal_mean) * 1.1]);
-        
-        // Add background grid for scatter plot
-        scatterSvg.append("g")
-            .attr("class", "grid")
-            .attr("transform", `translate(0,${scatterHeight})`)
-            .call(d3.axisBottom(scatterX)
-              .tickSize(-scatterHeight)
-              .tickFormat("")
-            );
-        
-        scatterSvg.append("g")
-            .attr("class", "grid")
-            .call(d3.axisLeft(scatterY)
-              .tickSize(-scatterWidth)
-              .tickFormat("")
-            );
-        
-        // Add X axis for scatter plot
-        scatterSvg.append("g")
-            .attr("class", "axis x-axis")
-            .attr("transform", `translate(0,${scatterHeight})`)
-            .call(d3.axisBottom(scatterX).ticks(6))
-            .call(g => g.select(".domain").remove());
-        
-        // Add Y axis for scatter plot
-        scatterSvg.append("g")
-            .attr("class", "axis y-axis")
-            .call(d3.axisLeft(scatterY).ticks(5))
-            .call(g => g.select(".domain").remove());
-        
-        // Add axis labels
-        scatterSvg.append("text")
-            .attr("class", "axis-label")
-            .attr("x", scatterWidth / 2)
-            .attr("y", scatterHeight + 40)
-            .attr("text-anchor", "middle")
-            .text("Valence Mean (Positivity)");
-        
-        scatterSvg.append("text")
-            .attr("class", "axis-label")
-            .attr("transform", "rotate(-90)")
-            .attr("x", -scatterHeight / 2)
-            .attr("y", -40)
-            .attr("text-anchor", "middle")
-            .text("Arousal Mean (Intensity)");
-        
-        // Add dots for scatter plot
-        const dots = scatterSvg.selectAll(".dot")
-            .data(data)
-            .enter()
-            .append("circle")
-            .attr("class", "dot")
-            .attr("cx", d => scatterX(d.valence_mean))
-            .attr("cy", d => scatterY(d.arousal_mean))
-            .attr("r", 6)
-            .attr("fill", d => color(d.language))
-            .attr("stroke", "white")
-            .attr("stroke-width", 1)
-            .on("mouseover", function(event, d) {
-              d3.select(this)
+        'data/lang_emotion.json';
+    
+    console.log("Loading Module E data from:", dataPath);
+    
+    // Load data
+    d3.json(dataPath)
+        .then(data => {
+            console.log("Module E data loaded successfully");
+            moduleEData = data;
+            
+            // Create visualizations
+            createScatterPlot(data);
+            createBarChart(data, "valence_mean");
+        })
+        .catch(error => {
+            console.error("Error loading Module E data:", error);
+            
+            // Use sample data as fallback
+            console.log("Using sample data for Module E");
+            moduleEData = moduleESampleData;
+            
+            // Create visualizations with sample data
+            createScatterPlot(moduleESampleData);
+            createBarChart(moduleESampleData, "valence_mean");
+        });
+}
+
+/**
+ * Creates the scatter plot visualization
+ * @param {Array} data - The data to visualize
+ */
+function createScatterPlot(data) {
+    // Scatter plot dimensions
+    const margin = {top: 40, right: 100, bottom: 60, left: 60};
+    const container = document.querySelector("#scatter-plot");
+    const width = container.clientWidth - margin.left - margin.right;
+    const height = 450 - margin.top - margin.bottom;
+    
+    console.log("Creating scatter plot with dimensions:", width, height);
+    
+    // Create SVG
+    scatterSvg = d3.select("#scatter-plot")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+    
+    // Create scales
+    const xScale = d3.scaleLinear()
+        .domain([0.08, d3.max(data, d => d.valence_mean) * 1.05])
+        .range([0, width]);
+    
+    const yScale = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.arousal_mean) * 1.1])
+        .range([height, 0]);
+    
+    // Add background grid
+    scatterSvg.append("g")
+        .attr("class", "grid")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(xScale)
+            .tickSize(-height)
+            .tickFormat("")
+        );
+    
+    scatterSvg.append("g")
+        .attr("class", "grid")
+        .call(d3.axisLeft(yScale)
+            .tickSize(-width)
+            .tickFormat("")
+        );
+    
+    // Add axes
+    scatterSvg.append("g")
+        .attr("class", "axis x-axis")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(xScale).ticks(6))
+        .call(g => g.select(".domain").remove());
+    
+    scatterSvg.append("g")
+        .attr("class", "axis y-axis")
+        .call(d3.axisLeft(yScale).ticks(5))
+        .call(g => g.select(".domain").remove());
+    
+    // Add axis labels
+    scatterSvg.append("text")
+        .attr("class", "axis-label")
+        .attr("x", width / 2)
+        .attr("y", height + 40)
+        .attr("text-anchor", "middle")
+        .text("Valence Mean (Positivity)");
+    
+    scatterSvg.append("text")
+        .attr("class", "axis-label")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -40)
+        .attr("text-anchor", "middle")
+        .text("Arousal Mean (Intensity)");
+    
+    // Get tooltip from utilities or create a new one
+    const tooltip = window.vizUtils ? window.vizUtils.tooltip : d3.select("body")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+    
+    // Add dots
+    const dots = scatterSvg.selectAll(".dot")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("class", "dot")
+        .attr("cx", d => xScale(d.valence_mean))
+        .attr("cy", d => yScale(d.arousal_mean))
+        .attr("r", 6)
+        .attr("fill", d => colorScale(d.language))
+        .attr("stroke", "white")
+        .attr("stroke-width", 1)
+        .on("mouseover", function(event, d) {
+            d3.select(this)
                 .transition()
                 .duration(200)
                 .attr("r", 8);
-              
-              tooltipE.transition()
+            
+            tooltip.transition()
                 .duration(200)
                 .style("opacity", 0.9);
-              
-              tooltipE.html(`
+            
+            tooltip.html(`
                 <h4>${d.language}</h4>
                 <p>Valence: <b>${d.valence_mean.toFixed(3)}</b></p>
                 <p>Arousal: <b>${d.arousal_mean.toFixed(3)}</b></p>
-              `)
+            `)
                 .style("left", (event.pageX + 10) + "px")
                 .style("top", (event.pageY - 28) + "px");
-            })
-            .on("mouseout", function() {
-              d3.select(this)
+        })
+        .on("mouseout", function() {
+            d3.select(this)
                 .transition()
                 .duration(200)
                 .attr("r", 6);
-              
-              tooltipE.transition()
+            
+            tooltip.transition()
                 .duration(500)
                 .style("opacity", 0);
-            });
-        
-        // Add language labels only for selected points
-        const labelThreshold = 0.20; // Only label languages with higher values
-        scatterSvg.selectAll(".dot-label")
-            .data(data)
-            .enter()
-            .append("text")
-            .attr("class", "dot-label")
-            .attr("x", d => scatterX(d.valence_mean) + 8)
-            .attr("y", d => scatterY(d.arousal_mean) + 4)
-            .text(d => (d.arousal_mean > labelThreshold || d.valence_mean > 0.28) ? d.language : "")
-            .style("font-size", "10px")
-            .style("fill", "#444");
-        
-        // Add legend for scatter plot
-        const legend = scatterSvg.append("g")
-            .attr("class", "legend")
-            .attr("transform", `translate(${scatterWidth + 20}, 0)`);
-        
-        // Get top languages by combined value for legend
-        const topLanguages = data.slice()
-            .sort((a, b) => (b.valence_mean + b.arousal_mean) - (a.valence_mean + a.arousal_mean))
-            .slice(0, 10);
-        
-        legend.selectAll(".legend-dot")
-            .data(topLanguages)
-            .enter()
-            .append("circle")
-            .attr("class", "legend-dot")
-            .attr("cx", 0)
-            .attr("cy", (d, i) => 20 + i * 20)
-            .attr("r", 5)
-            .attr("fill", d => color(d.language));
-        
-        legend.selectAll(".legend-label")
-            .data(topLanguages)
-            .enter()
-            .append("text")
-            .attr("class", "legend-item")
-            .attr("x", 10)
-            .attr("y", (d, i) => 20 + i * 20)
-            .attr("dy", "0.32em")
-            .text(d => d.language)
-            .style("font-size", "11px")
-            .on("mouseover", function(event, d) {
-              // Highlight corresponding dot
-              dots.filter(dot => dot.language === d.language)
+        });
+    
+    // Add language labels for selected points
+    const labelThreshold = 0.20;
+    scatterSvg.selectAll(".dot-label")
+        .data(data)
+        .enter()
+        .append("text")
+        .attr("class", "dot-label")
+        .attr("x", d => xScale(d.valence_mean) + 8)
+        .attr("y", d => yScale(d.arousal_mean) + 4)
+        .text(d => (d.arousal_mean > labelThreshold || d.valence_mean > 0.28) ? d.language : "")
+        .style("font-size", "10px")
+        .style("fill", "#444");
+    
+    // Add legend
+    const legend = scatterSvg.append("g")
+        .attr("class", "legend")
+        .attr("transform", `translate(${width + 20}, 0)`);
+    
+    // Get top languages for legend
+    const topLanguages = data.slice()
+        .sort((a, b) => (b.valence_mean + b.arousal_mean) - (a.valence_mean + a.arousal_mean))
+        .slice(0, 10);
+    
+    legend.selectAll(".legend-dot")
+        .data(topLanguages)
+        .enter()
+        .append("circle")
+        .attr("class", "legend-dot")
+        .attr("cx", 0)
+        .attr("cy", (d, i) => 20 + i * 20)
+        .attr("r", 5)
+        .attr("fill", d => colorScale(d.language));
+    
+    legend.selectAll(".legend-label")
+        .data(topLanguages)
+        .enter()
+        .append("text")
+        .attr("class", "legend-item")
+        .attr("x", 10)
+        .attr("y", (d, i) => 20 + i * 20)
+        .attr("dy", "0.32em")
+        .text(d => d.language)
+        .style("font-size", "11px")
+        .on("mouseover", function(event, d) {
+            // Highlight corresponding dot
+            dots.filter(dot => dot.language === d.language)
                 .transition()
                 .duration(200)
                 .attr("r", 9)
                 .attr("stroke-width", 2);
-              
-              d3.select(this).style("font-weight", "bold");
-            })
-            .on("mouseout", function(event, d) {
-              // Restore dot size
-              dots.filter(dot => dot.language === d.language)
+            
+            d3.select(this).style("font-weight", "bold");
+        })
+        .on("mouseout", function(event, d) {
+            // Restore dot size
+            dots.filter(dot => dot.language === d.language)
                 .transition()
                 .duration(200)
                 .attr("r", 6)
                 .attr("stroke-width", 1);
-              
-              d3.select(this).style("font-weight", "normal");
-            });
-        
-        // Add title for legend
-        legend.append("text")
-            .attr("x", 0)
-            .attr("y", 0)
-            .style("font-size", "12px")
-            .style("font-weight", "bold")
-            .text("Top Languages");
-        
-        // --- MODIFIED: Event listener for dimension selection moved to main.js ---
-        // Initial bar chart
-        updateBarChart(data, "valence_mean");
-    }).catch(error => {
-        console.error("Error loading the data:", error);
-        // --- MODIFIED: Added better error handling ---
-        if (window.vizUtils && window.vizUtils.handleDataError) {
-            window.vizUtils.handleDataError('e', error);
-        }
-        // Use sample data if actual data loading fails
-        updateBarChart(sampleData, "valence_mean");
-    });
-    
-    // --- MODIFIED: Function exposed to window object so it can be called from main.js ---
-    // Function to update bar chart based on selected dimension
-    window.updateModuleEBarChart = function(dimension) {
-        const dimensionName = dimension === "valence_mean" ? "Valence" : "Arousal";
-        document.getElementById("bar-chart-title").textContent = `Average ${dimensionName} Across Languages`;
-        
-        // Try to load data again if not already available
-        d3.json(dataPath).then(data => {
-            updateBarChart(data, dimension);
-        }).catch(error => {
-            console.error("Error loading the data for bar chart update:", error);
-            updateBarChart(sampleData, dimension);
+            
+            d3.select(this).style("font-weight", "normal");
         });
-    };
     
-    /**
-     * Updates the bar chart based on the selected dimension
-     * @param {Array} data - The data to visualize
-     * @param {string} dimension - The dimension to display (valence_mean or arousal_mean)
-     */
-    function updateBarChart(data, dimension) {
-        // Sort data by selected dimension
-        const sortedData = data.slice()
-            .sort((a, b) => d3.descending(a[dimension], b[dimension]));
-        
-        // Update scales
-        barX.domain(sortedData.map(d => d.language));
-        
-        // Adjust y scale domain with 10% padding
-        const maxValue = d3.max(sortedData, d => d[dimension]);
-        barY.domain([0, maxValue * 1.1]).nice();
-        
-        // Clear previous chart
-        barSvg.selectAll(".axis").remove();
-        
-        // Add grid lines
-        barSvg.append("g")
-            .attr("class", "grid")
-            .call(d3.axisLeft(barY)
-              .tickSize(-barWidth)
-              .tickFormat("")
-            );
-        
-        // Add X axis
-        barSvg.append("g")
-            .attr("class", "axis x-axis")
-            .attr("transform", `translate(0,${barHeight})`)
-            .call(d3.axisBottom(barX))
-            .selectAll("text")
-            .attr("transform", "rotate(-45)")
-            .style("text-anchor", "end")
-            .attr("dx", "-.8em")
-            .attr("dy", ".15em");
-        
-        // Add Y axis
-        barSvg.append("g")
-            .attr("class", "axis y-axis")
-            .call(d3.axisLeft(barY).ticks(5))
-            .call(g => g.select(".domain").remove());
-        
-        // Add Y axis label
-        const dimensionLabel = dimension === "valence_mean" ? "Valence (Positivity)" : "Arousal (Intensity)";
-        
-        barSvg.append("text")
-            .attr("class", "axis-label")
-            .attr("transform", "rotate(-90)")
-            .attr("x", -barHeight / 2)
-            .attr("y", -40)
-            .attr("text-anchor", "middle")
-            .text(dimensionLabel);
-        
-        // Transition for updating bars
-        const barGroups = barSvg.selectAll(".bar-group")
-            .data(sortedData, d => d.language);
-        
-        // Remove old bars
-        barGroups.exit().remove();
-        
-        // Add new bar groups
-        const enterGroups = barGroups.enter()
-            .append("g")
-            .attr("class", "bar-group");
-        
-        // Add bars
-        enterGroups.append("rect")
-            .attr("class", "bar")
-            .attr("x", d => barX(d.language))
-            .attr("y", d => barY(d[dimension]))
-            .attr("width", barX.bandwidth())
-            .attr("height", d => barHeight - barY(d[dimension]))
-            .attr("fill", d => color(d.language))
-            .attr("rx", 2) // Rounded corners
-            .on("mouseover", function(event, d) {
-              d3.select(this).attr("opacity", 0.8);
-              
-              tooltipE.transition()
-                .duration(200)
-                .style("opacity", 0.9);
-              
-              const dimensionName = dimension === "valence_mean" ? "Valence" : "Arousal";
-              tooltipE.html(`
-                <h4>${d.language}</h4>
-                <p>${dimensionName}: <b>${d[dimension].toFixed(3)}</b></p>
-              `)
-                .style("left", (event.pageX + 10) + "px")
-                .style("top", (event.pageY - 28) + "px");
-            })
-            .on("mouseout", function() {
-              d3.select(this).attr("opacity", 1);
-              
-              tooltipE.transition()
-                .duration(500)
-                .style("opacity", 0);
-            });
-        
-        // Add labels on top of bars
-        enterGroups.append("text")
-            .attr("class", "bar-label")
-            .attr("x", d => barX(d.language) + barX.bandwidth() / 2)
-            .attr("y", d => barY(d[dimension]) - 5)
-            .attr("text-anchor", "middle")
-            .text(d => d[dimension].toFixed(2));
-        
-        // Update existing bars with transition
-        barGroups.select(".bar")
-            .transition()
-            .duration(750)
-            .attr("x", d => barX(d.language))
-            .attr("y", d => barY(d[dimension]))
-            .attr("width", barX.bandwidth())
-            .attr("height", d => barHeight - barY(d[dimension]));
-        
-        // Update labels with transition
-        barGroups.select(".bar-label")
-            .transition()
-            .duration(750)
-            .attr("x", d => barX(d.language) + barX.bandwidth() / 2)
-            .attr("y", d => barY(d[dimension]) - 5)
-            .text(d => d[dimension].toFixed(2));
-        
-        // Combine enter and update selections
-        barGroups.merge(enterGroups);
-    }
+    // Add legend title
+    legend.append("text")
+        .attr("x", 0)
+        .attr("y", 0)
+        .style("font-size", "12px")
+        .style("font-weight", "bold")
+        .text("Top Languages");
+    
+    console.log("Scatter plot created successfully");
 }
 
-// --- MODIFIED: Added resize handler function for this module ---
+/**
+ * Creates the bar chart visualization
+ * @param {Array} data - The data to visualize
+ * @param {string} dimension - The dimension to display (valence_mean or arousal_mean)
+ */
+function createBarChart(data, dimension) {
+    // Clear previous bar chart
+    d3.select("#bar-chart").html("");
+    
+    // Bar chart dimensions
+    const margin = {top: 20, right: 30, bottom: 100, left: 60};
+    const container = document.querySelector("#bar-chart");
+    const width = container.clientWidth - margin.left - margin.right;
+    const height = 350 - margin.top - margin.bottom;
+    
+    console.log("Creating bar chart with dimensions:", width, height, "for dimension:", dimension);
+    
+    // Update chart title
+    const dimensionName = dimension === "valence_mean" ? "Valence" : "Arousal";
+    document.getElementById("bar-chart-title").textContent = `Average ${dimensionName} Across Languages`;
+    
+    // Create SVG
+    barSvg = d3.select("#bar-chart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+    
+    // Sort data by selected dimension
+    const sortedData = data.slice()
+        .sort((a, b) => d3.descending(a[dimension], b[dimension]));
+    
+    // Create scales
+    const xScale = d3.scaleBand()
+        .domain(sortedData.map(d => d.language))
+        .range([0, width])
+        .padding(0.2);
+    
+    const maxValue = d3.max(sortedData, d => d[dimension]);
+    const yScale = d3.scaleLinear()
+        .domain([0, maxValue * 1.1])
+        .range([height, 0])
+        .nice();
+    
+    // Add grid lines
+    barSvg.append("g")
+        .attr("class", "grid")
+        .call(d3.axisLeft(yScale)
+            .tickSize(-width)
+            .tickFormat("")
+        );
+    
+    // Add X axis
+    barSvg.append("g")
+        .attr("class", "axis x-axis")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(xScale))
+        .selectAll("text")
+        .attr("transform", "rotate(-45)")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em");
+    
+    // Add Y axis
+    barSvg.append("g")
+        .attr("class", "axis y-axis")
+        .call(d3.axisLeft(yScale).ticks(5))
+        .call(g => g.select(".domain").remove());
+    
+    // Add Y axis label
+    const dimensionLabel = dimension === "valence_mean" ? "Valence (Positivity)" : "Arousal (Intensity)";
+    
+    barSvg.append("text")
+        .attr("class", "axis-label")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -40)
+        .attr("text-anchor", "middle")
+        .text(dimensionLabel);
+    
+    // Get tooltip from utilities or create a new one
+    const tooltip = window.vizUtils ? window.vizUtils.tooltip : d3.select("body")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+    
+    // Create bar groups
+    const barGroups = barSvg.selectAll(".bar-group")
+        .data(sortedData)
+        .enter()
+        .append("g")
+        .attr("class", "bar-group");
+    
+    // Add bars with enter animation
+    barGroups.append("rect")
+        .attr("class", "bar")
+        .attr("x", d => xScale(d.language))
+        .attr("width", xScale.bandwidth())
+        .attr("y", height) // Start from bottom
+        .attr("height", 0) // Start with height 0
+        .attr("fill", d => colorScale(d.language))
+        .attr("rx", 2) // Rounded corners
+        .on("mouseover", function(event, d) {
+            d3.select(this).attr("opacity", 0.8);
+            
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", 0.9);
+            
+            tooltip.html(`
+                <h4>${d.language}</h4>
+                <p>${dimensionName}: <b>${d[dimension].toFixed(3)}</b></p>
+            `)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", function() {
+            d3.select(this).attr("opacity", 1);
+            
+            tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+        })
+        .transition() // Animation
+        .duration(750)
+        .delay((d, i) => i * 10)
+        .attr("y", d => yScale(d[dimension]))
+        .attr("height", d => height - yScale(d[dimension]));
+    
+    // Add value labels with animation
+    barGroups.append("text")
+        .attr("class", "bar-label")
+        .attr("x", d => xScale(d.language) + xScale.bandwidth() / 2)
+        .attr("y", height) // Start from bottom
+        .attr("text-anchor", "middle")
+        .text(d => d[dimension].toFixed(2))
+        .style("opacity", 0) // Start invisible
+        .transition() // Animation
+        .duration(750)
+        .delay((d, i) => i * 10 + 250) // Slight delay after bars
+        .attr("y", d => yScale(d[dimension]) - 5)
+        .style("opacity", 1);
+    
+    console.log("Bar chart created successfully for dimension:", dimension);
+}
+
+/**
+ * Updates the bar chart based on the selected dimension
+ * @param {string} dimension - The dimension to display (valence_mean or arousal_mean)
+ */
+function updateModuleEBarChart(dimension) {
+    console.log("Updating Module E bar chart for dimension:", dimension);
+    
+    // Use stored data or sample data if not available
+    const data = moduleEData || moduleESampleData;
+    
+    // Create a new bar chart with the selected dimension
+    createBarChart(data, dimension);
+}
+
 /**
  * Handles window resize event for Module E
- * Redraws visualizations to fit new screen dimensions
  */
 function handleModuleEResize() {
+    console.log("Handling Module E resize");
+    
     // Simply re-initialize the module which will recalculate all dimensions
     initModuleE();
 }
 
-// --- MODIFIED: Export the module initialization function ---
-// Make the initialization function available globally
+// Make functions available globally
 window.initModuleE = initModuleE;
+window.updateModuleEBarChart = updateModuleEBarChart;
+window.handleModuleEResize = handleModuleEResize;
+window.cleanupModuleE = cleanupModuleE;
