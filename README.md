@@ -1,6 +1,6 @@
 # Cross-Cultural Dynamics of Emotional Expression in Lyrics
 
-[Banner](https://com-480-data-visualization.github.io/lyrical-emotion-InSight/)
+[Demo website](https://com-480-data-visualization.github.io/lyrical-emotion-InSight/)
 
 ## Project Overview
 
