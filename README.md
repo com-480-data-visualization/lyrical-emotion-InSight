@@ -5,7 +5,7 @@
 This interactive data visualization project explores how emotions are expressed in song lyrics across different languages, cultures, and time periods. Using computational analysis and data visualization techniques, we examine patterns in emotional expression, linguistic features, and structural elements of lyrics from around the world.
 
 **Live Demo**: [Cross-Cultural Dynamics of Emotional Expression in Lyrics](https://com-480-data-visualization.github.io/lyrical-emotion-InSight/)
-
+Video backup address(included in github): [Video](https://drive.google.com/drive/folders/1ollYvoAg3SnQRqVNJkw5nvcQFt1jfpTn?usp=drive_link) 
 ## Project Structure
 
 The project is organized into a modular structure to facilitate maintenance and expansion:
