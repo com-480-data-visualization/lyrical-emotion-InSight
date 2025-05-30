@@ -249,6 +249,63 @@
 
         <!-- Emotion & Linguistics Tab -->
         <div id="emotion-linguistics" class="tab-pane">
+            <div class="section">
+                <h2>🎵 Episode Model: Functional Emotional Experiences of Music</h2>
+              
+                <p>
+                  This section introduces the <strong>Episode Model</strong> proposed by 
+                  <a href="https://doi.org/10.1177/03057356241279763" target="_blank">Eerola et al. (2024)</a>, 
+                  which conceptualizes emotional engagement with music as <em>functionally situated episodes</em>.
+                  Each episode reflects how listeners use music to serve specific affective goals—ranging from relaxation to emotional insight.
+                </p>
+              
+                <p>
+                  In our research, we use this model to investigate how these emotional episodes are 
+                  <strong>expressed linguistically</strong> in lyrics. By mapping line-level emotional experiences 
+                  to episode categories, we aim to uncover relationships between <strong>linguistic structure</strong> 
+                  (e.g., syntax, repetition, metaphor) and <strongfunctional emotional episodes</strong>. 
+                  This bridges music psychology and computational text analysis.
+                </p>
+              
+                <div class="episode" id="edr">
+                  <h3>1. Enjoyment–Distraction–Relaxation (EDR)</h3>
+                  <p><strong>Function:</strong> Mood enhancement, stress relief, and pleasurable immersion.</p>
+                  <p><strong>Core Affect:</strong> Increased positive valence; arousal may rise or fall.</p>
+                  <p><strong>Context:</strong> Everyday listening to unwind, distract, or evoke bodily enjoyment (e.g., feel-good music, dancing).</p>
+                </div>
+              
+                <div class="episode" id="cb">
+                  <h3>2. Connection–Belonging (CB)</h3>
+                  <p><strong>Function:</strong> Fostering emotional bonds and social inclusion.</p>
+                  <p><strong>Core Affect:</strong> Positive valence associated with sociality or shared identity.</p>
+                  <p><strong>Context:</strong> Communal settings, rituals, or solitary listening with a sense of imagined social presence.</p>
+                </div>
+              
+                <div class="episode" id="fm">
+                  <h3>3. Focus–Motivation (FM)</h3>
+                  <p><strong>Function:</strong> Supporting goal-directed activities and cognitive engagement.</p>
+                  <p><strong>Core Affect:</strong> Positive valence; arousal aligned with task demands.</p>
+                  <p><strong>Context:</strong> Listening during work, study, or physical activity to boost energy or maintain flow.</p>
+                </div>
+              
+                <div class="episode" id="pep">
+                  <h3>4. Personal Emotional Processing (PEP)</h3>
+                  <p><strong>Function:</strong> Emotional self-reflection, coping, and autobiographical resonance.</p>
+                  <p><strong>Core Affect:</strong> Varied valence; includes sadness, catharsis, or emotional clarity.</p>
+                  <p><strong>Context:</strong> Deep, introspective listening tied to identity, memories, and expressive lyrics.</p>
+                </div>
+              
+                <div class="episode" id="aia">
+                  <h3>5. Aesthetic–Interest–Awe (AIA)</h3>
+                  <p><strong>Function:</strong> Evoking awe, aesthetic appreciation, and spiritual/emotional elevation.</p>
+                  <p><strong>Core Affect:</strong> Complex or transcendent affective states (e.g., chills, being moved).</p>
+                  <p><strong>Context:</strong> Rare but intense encounters with music’s beauty, novelty, or profundity.</p>
+                </div>
+              
+                <p class="citation">
+                  <em>Reference:</em> Eerola, T., Kirts, C., & Saarikallio, S. (2024). Episode Model: The functional approach to emotional experiences of music. <em>Psychology of Music</em>. https://doi.org/10.1177/03057356241279763
+                </p>
+            </div>
             <!-- MODULE VAD: Lexicon-Based VAD Correlation Matrix -->
             <div class="section">
                 <div class="section-intro">
@@ -268,7 +325,44 @@
                     </div>
                 </div>
             </div>
-
+            <div class="section">
+                <div class="section-intro">
+                    <h2>🔍 Detailed Interpretation</h2>
+                    <p>Here we break down the lexical VAD distributions and provide interpretive insights based on their shapes and skews.</p>
+                </div>
+            
+                <div class="visualization-container module-vad">
+                    <div class="container">
+                        <section class="vad-insights">
+                            <h3>📈 Valence</h3>
+                            <ul>
+                                <li>Right-skewed toward positivity — most lyrics fall in the 0.5–0.7 range.</li>
+                                <li>Slight bimodal shape (small bumps) could indicate two emotional “modes” (e.g., joy vs. calmness).</li>
+                                <li>Very few extremely negative lyrics (valence &lt; 0.3) — likely a reflection of:
+                                    <ul>
+                                        <li>Lexical limitations (some angry/sad words not covered)</li>
+                                        <li>Genre tendencies (e.g., fewer nihilistic tracks)</li>
+                                    </ul>
+                                </li>
+                            </ul>
+            
+                            <h3>📈 Arousal</h3>
+                            <ul>
+                                <li>Highly peaked around ~0.4 — most songs cluster at moderate arousal levels.</li>
+                                <li>Long tail to the right — very few high-energy lyrics.</li>
+                                <li>This suggests your corpus emphasizes reflective or emotionally balanced music more than hyper-aroused content (e.g., metal, EDM).</li>
+                            </ul>
+            
+                            <h3>📈 Dominance</h3>
+                            <ul>
+                                <li>Similar to arousal, with a dominant peak near 0.5 and a secondary bump.</li>
+                                <li>Notably, there’s a small kink/spike at ~0.58, possibly reflecting lexicon bias or some repeated emotional themes (e.g., confident/empowered lyrics).</li>
+                                <li>Overall reflects a good range of perceived agency/control in lyrics.</li>
+                            </ul>
+                        </section>
+                    </div>
+                </div>
+            </div>
             <!-- MODULE UMAP: UMAP Clustering Comparison -->
             <div class="section">
                 <div class="section-intro">

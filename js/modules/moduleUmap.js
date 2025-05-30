@@ -30,11 +30,11 @@ function initModuleUmap() {
     
     // Episode display names for more descriptive legends
     const episodeDisplayNames = {
-        "EDR": "Emotional Downregulation",
-        "CB": "Cognitive Breakthrough",
-        "PEP": "Positive Emotional Progression",
-        "FM": "Flow Maintenance",
-        "AIA": "Arousal-Inducing Activity",
+        "EDR": "Enjoyment–Distraction–Relaxation",
+        "CB": "Connection–Belonging",
+        "PEP": "Personal Emotional Processing",
+        "FM": "Focus–Motivation",
+        "AIA": "Aesthetic–Interest–Awe",
         "Unclassified": "Unclassified"
     };
     
